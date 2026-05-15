@@ -12,6 +12,6 @@ I am an active participant in multiple forums and Discord (`@emre_dsc`) communit
 
 Should assistance be required, the option to contact me via email, or Discord is available.
 
-We strive for independence, freedom, privacy, security, knowledge and power: Empowered people, empower people.
+We strive for independence, freedom, privacy, security, knowledge and power.
 
 *"Man is born free, and everywhere he is in chains."* - **Jean-Jacques Rousseau** (The Social Contract, 1762)
