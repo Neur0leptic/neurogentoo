@@ -1,17 +1,51 @@
-Greetings.
+# neurogentoo
 
-My primary research interests are focused on sports and health sciences. However:
+A Gentoo overlay and installer-policy repository forked from
+[emrakyz/emrakyz](https://github.com/emrakyz/emrakyz).
 
-I possess extensive experience in the use of computers, spanning a couple decades. The following subjects are of particular interest: Linux/BSD system administration, improving security and privacy, scripting and automation, customization, and command-line interface (CLI) tools.
+This fork retains inherited ebuilds while adding desktop and CLI packages,
+Wayland-focused configuration and native policy inputs for
+[install-system](https://github.com/Neur0leptic/install-system).
 
-I am a multimedia enthusiast and a developer with a strong interest in multimedia toolkits, to which I contribute both creation and development.
+## Contents
 
-My research interests include Gentoo Linux, build systems, and system optimizations.
+- Package categories at the repository root contain inherited and additional ebuilds.
+- `config/portage/` contains package sets, USE settings, package environments
+  and compiler-policy layers.
+- `config/hardware/` contains firmware, microcode and graphics-policy templates.
+- `config/system/` contains OpenRC, networking and system-configuration inputs.
 
-I am an active participant in multiple forums and Discord (`@emre_dsc`) communities. My contributions include providing assistance to individuals with regard to system and multimedia-related tasks, researching better methods and also creating data to progress.
+## Additions and changes
 
-Should assistance be required, the option to contact me via email, or Discord is available.
+- Repository identity changed from `emrakyz` to `neurogentoo`.
+- Added minimal, DWL and full package sets, with optional torrent tools.
+- Added staged GCC/Clang, Polly and Rust compiler-policy inputs.
+- Added hardware-dependent configuration templates.
+- Added a live DWL ebuild using the canonical patch and IPC protocol from
+  `dotfiles/main`, applied to an ABI-compatible Codeberg DWL source.
+- Added recipes for applications including nchat, libsignal-ffi, cliamp,
+  impala, wiki-tui, croc, clipse and ripdrag.
+- Added binary packages for OpenCode, shfmt, LocalSend and Helium.
+- Added a newer Yazi ebuild.
+- Added declared Go and Cargo dependency inputs for the new build recipes.
 
-We strive for independence, freedom, privacy, security, knowledge and power.
+## Usage and scope
 
-*"Man is born free, and everywhere he is in chains."* - **Jean-Jacques Rousseau** (The Social Contract, 1762)
+`neurogentoo` is a normal Portage repository using Gentoo as its master.
+Package installation and dependency resolution remain Portage's responsibility.
+
+The `config/` layers are consumed by the installer. Adding the overlay alone
+does not activate its compiler settings or deploy system configuration.
+These templates are opinionated, not universal Gentoo defaults.
+
+## Credits
+
+The original overlay comes from
+[emrakyz/emrakyz](https://github.com/emrakyz/emrakyz).
+Existing copyright notices and package-specific license declarations are retained.
+
+## Related repositories
+
+- [Installer](https://github.com/Neur0leptic/install-system)
+- [Arch package policy](https://github.com/Neur0leptic/neuroarch)
+- [Dotfiles](https://github.com/Neur0leptic/dotfiles)
