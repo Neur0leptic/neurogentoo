@@ -1,0 +1,2 @@
+UUID=@BOOT_UUID@ /boot vfat defaults,noatime 0 2
+UUID=@ROOT_UUID@ / f2fs defaults,noatime,discard,background_gc=on,noinline_data,noinline_dentry,nobarrier 0 1

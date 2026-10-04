@@ -1,0 +1,3 @@
+# Selected WireGuard scripts and their firewall rules.
+net-firewall/nftables
+net-vpn/wireguard-tools

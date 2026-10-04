@@ -1,0 +1,75 @@
+*/* llvm_slot_22
+*/* PYTHON_TARGETS: -* python3_14
+*/* PYTHON_SINGLE_TARGET: -* python3_14
+
+### SYSTEM PACKAGES ###
+sys-apps/portage native-extensions ipc
+sys-libs/glibc multiarch static-libs
+sys-devel/binutils static-libs
+sys-libs/binutils-libs 64-bit-bfd
+dev-lang/perl -minimal
+sys-kernel/gentoo-sources symlink experimental
+media-video/pipewire pipewire-alsa sound-server
+sys-auth/seatd server builtin
+sys-apps/util-linux su pam suid
+sys-fs/fuse suid
+net-misc/curl http2 ssl openssl curl_ssl_openssl
+dev-vcs/git curl
+sys-apps/systemd-utils tmpfiles udev
+dev-lang/python ensurepip ssl sqlite ncurses readline tail-call-interp
+sys-process/procps ncurses
+sys-apps/busybox savedconfig static
+virtual/libcrypt static-libs
+sys-libs/libxcrypt static-libs
+app-eselect/eselect-repository git
+sys-apps/grep static pcre
+sys-firmware/intel-microcode split-ucode
+sys-kernel/linux-firmware savedconfig
+sys-apps/openrc pam
+
+# DEFAULT APPS
+app-alternatives/awk gawk
+app-alternatives/bzip2 lbzip2
+app-alternatives/gzip pigz
+app-alternatives/sh dash
+app-alternatives/tar gnu
+app-alternatives/yacc bison
+app-alternatives/lex reflex
+app-alternatives/bc gnu
+app-alternatives/cpio gnu
+app-alternatives/ninja -reference samurai
+app-shells/zsh static pcre
+dev-libs/libpcre2 static-libs unicode pcre16
+app-shells/dash static
+sys-libs/ncurses static-libs
+
+# LLVM
+llvm-runtimes/compiler-rt atomic-builtins
+llvm-runtimes/compiler-rt-sanitizers profile
+llvm-runtimes/libunwind static-libs
+llvm-runtimes/libcxx static-libs
+llvm-runtimes/libcxxabi static-libs
+llvm-runtimes/clang-runtime sanitize compiler-rt polly
+llvm-core/llvm llvm_targets_NVPTX
+dev-lang/rust clippy rust-analyzer rust-src rustfmt
+dev-lang/rust-bin clippy rust-analyzer rust-src rustfmt
+
+# FONTS
+media-libs/freetype harfbuzz png
+media-libs/harfbuzz truetype glib graphite icu
+x11-libs/cairo glib -X
+x11-libs/pango -X
+
+# Required for Neovim
+app-editors/neovim lua_single_target_luajit
+dev-lua/luv lua_single_target_luajit -lua_single_target_lua5-4
+dev-lua/mpack lua_targets_luajit lua_single_target_luajit
+dev-lua/lpeg lua_targets_luajit lua_single_target_luajit
+dev-lua/lua-cjson internal-fpconv
+
+app-alternatives/gpg reference ssl
+app-crypt/gnupg alternatives
+dev-libs/nettle gmp
+app-crypt/gnupg ssl
+net-wireless/iwd client
+dev-cpp/eigen sparsehash

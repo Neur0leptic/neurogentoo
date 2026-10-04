@@ -1,0 +1,17 @@
+# Full-tier applications; their libraries and build tools are ebuild dependencies.
+app-arch/ouch
+app-text/tessdata_fast[l10n_de]
+app-text/tesseract[png]
+app-text/zathura
+app-text/zathura-pdf-poppler
+app-office/calcurse
+app-text/poppler
+dev-lang/python
+media-gfx/imv[bmp,gif,jpeg,png,svg,wayland,webp,-X]
+media-video/ffmpeg
+media-video/mpv[cli,lua,lua_single_target_luajit,pipewire,wayland,-X,-alsa,-libmpv]
+net-misc/aria2[ssl,-adns,-bittorrent,-gnutls,-libuv,-libxml2,-metalink,-nettle,-nls,-scripts,-sqlite,-ssh,-tcmalloc,-xmlrpc]
+net-misc/yt-dlp
+sys-process/btop
+sys-process/htop
+x11-misc/xdg-utils

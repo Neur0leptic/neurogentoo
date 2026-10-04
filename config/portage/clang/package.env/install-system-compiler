@@ -1,0 +1,99 @@
+sys-devel/gcc gcc_o3_lto gcc_busybox_awk
+sys-libs/glibc gcc_o3_lto
+sys-devel/binutils gcc_o3_lto
+sys-libs/binutils-libs gcc_o3_lto
+
+# LLVM does not like Polly
+llvm-core/llvm-common no_polly
+dev-libs/jsoncpp no_polly
+dev-build/cmake no_polly
+llvm-core/llvm no_polly
+llvm-core/llvmgold no_polly
+llvm-core/polly no_polly
+llvm-core/lld no_polly
+llvm-core/clang-common no_polly
+llvm-core/clang no_polly
+llvm-runtimes/libunwind no_polly
+llvm-core/clang-toolchain-symlinks no_polly
+llvm-runtimes/compiler-rt no_polly
+llvm-runtimes/openmp no_polly
+llvm-runtimes/compiler-rt-sanitizers no_polly
+llvm-runtimes/offload no_polly
+llvm-runtimes/clang-runtime no_polly
+llvm-runtimes/libcxxabi no_polly
+llvm-runtimes/libcxx no_polly
+sys-devel/mold no_polly
+app-arch/zstd no_polly
+dev-lang/rust no_polly
+
+# Existing compiler exceptions from Gentoo.md/reference policy.
+# These are configuration, not installation requests.
+media-libs/mesa no_polly
+dev-util/maturin no_polly
+dev-libs/glib no_polly
+dev-debug/gdb no_polly
+app-crypt/mit-krb5 no_polly
+app-text/ghostscript-gpl no_polly
+gui-apps/qt6ct no_polly
+media-video/ffmpeg no_polly
+dev-util/vulkan-utility-libraries no_polly
+app-shells/fzf no_polly
+dev-libs/nspr no_polly
+dev-lang/python no_polly
+dev-python/uv no_polly
+app-shells/atuin no_polly
+dev-build/just no_polly
+dev-lang/ruby no_polly
+dev-libs/ncnn no_polly
+dev-libs/boost no_polly
+app-shells/bash no_polly
+app-office/libreoffice no_polly
+dev-cpp/libcmis no_polly
+dev-db/mysql-connector-c no_polly
+dev-qt/qtmultimedia no_polly
+dev-lang/ocaml no_polly
+media-libs/shaderc no_polly
+www-client/librewolf no_polly
+dev-libs/openssl no_polly
+media-gfx/geeqie no_polly
+dev-libs/libffi no_polly
+dev-util/cargo-c no_polly
+dev-qt/qtdeclarative no_polly
+app-crypt/gnupg no_polly
+dev-lang/luajit no_polly
+x11-terms/wezterm no_polly
+www-client/librewolf no_polly
+dev-lang/yasm no_polly
+dev-libs/icu no_polly
+net-libs/nodejs no_polly
+app-misc/yazi no_polly
+dev-libs/nettle no_polly
+net-libs/gnutls no_polly
+dev-libs/protobuf no_polly
+dev-qt/qtbase no_polly
+app-misc/hck no_polly
+dev-libs/libpcre2 no_polly
+sys-fs/f2fs-tools no_polly
+dev-util/colm no_polly
+dev-util/ragel no_polly
+dev-util/scc no_polly
+dev-util/source-highlight no_polly
+app-text/doxygen no_polly
+gui-libs/libdecor no_polly
+media-libs/libsdl2 no_polly
+gui-wm/hyprland no_polly
+gui-libs/hyprutils no_polly
+gui-libs/hyprcursor no_polly
+dev-libs/hyprgraphics no_polly
+media-video/handbrake no_polly
+# The historical reference names no_polly_perf, but defines no such env file.
+# perf is not selected by any installer set; keep that unresolved entry inactive.
+# dev-util/perf no_polly_perf
+dev-debug/gdb gcc_o3_lto
+dev-libs/libgcrypt no_polly
+dev-libs/blake3 no_polly
+gui-wm/mangowc no_polly
+sys-apps/busybox no_polly
+
+dev-libs/protobuf clang_safe
+net-misc/openssh openssh_no_sandbox

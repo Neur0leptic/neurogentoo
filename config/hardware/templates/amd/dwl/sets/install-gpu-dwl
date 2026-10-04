@@ -1,0 +1,2 @@
+media-libs/mesa[video_cards_radeonsi,vaapi,vulkan]
+media-video/ffmpeg[vaapi]

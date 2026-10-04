@@ -1,0 +1,31 @@
+app-misc/brightnessctl udev
+# Waybar tray is already used in the DWL tier (also shared by LocalSend later).
+dev-libs/libdbusmenu gtk3
+gui-apps/wf-recorder pipewire
+gui-apps/swaylock-effects pam -gdk-pixbuf -man
+# Backlight display uses udev; scrolling uses brightnessctl, not login-proxy.
+# DWL modules are unconditional in Waybar 0.15; wifi provides rfkill status.
+gui-apps/waybar mpris network pipewire tray udev wifi
+gui-libs/wlroots:0.20 drm libinput session
+gui-libs/xdg-desktop-portal-wlr -elogind -systemd
+media-libs/libpng apng
+media-libs/libvpx postproc
+media-libs/mesa llvm llvm_slot_22 opengl wayland -X -opencl -vulkan
+media-video/ffmpeg gpl opus x264
+media-video/pipewire bluetooth dbus extra pipewire-alsa sound-server -elogind -system-service -systemd
+media-video/wireplumber -elogind -system-service -systemd
+net-wireless/iwd client
+# Helium needs libcups; use the existing TLS provider without enabling cupsd.
+net-print/cups openssl
+sys-apps/eza -git
+sys-apps/xdg-desktop-portal -systemd
+sys-apps/xdg-desktop-portal-gtk wayland -X
+sys-auth/seatd builtin server
+sys-fs/udisks daemon introspection -elogind -lvm -smart -systemd
+sys-process/psmisc -X
+x11-libs/gtk+:3 -X wayland
+x11-misc/rofi drun wayland -X -windowmode
+x11-terms/kitty -X wayland
+# Native Wayland needs dbus; the existing global PGO needs jumbo-build.
+# libpng[apng] / libvpx[postproc] above satisfy its selected system libraries.
+www-client/librewolf dbus jumbo-build wayland

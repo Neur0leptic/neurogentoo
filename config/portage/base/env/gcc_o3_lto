@@ -1,0 +1,19 @@
+CC="gcc"
+CXX="g++"
+LD="ld.bfd"
+AR="gcc-ar"
+NM="gcc-nm"
+RANLIB="ranlib"
+STRIP="strip"
+OBJCOPY="objcopy"
+OBJDUMP="objdump"
+
+COMMON_FLAGS="-O3 -march=native -mtune=native -pipe -fno-math-errno \
+        -flto -fomit-frame-pointer -fno-semantic-interposition \
+        -fno-stack-protector -fno-stack-clash-protection -fno-sanitize=all \
+        -fno-dwarf2-cfi-asm -ffp-contract=fast"
+
+CFLAGS="${COMMON_FLAGS}"
+CXXFLAGS="${COMMON_FLAGS}"
+LDFLAGS="-fuse-ld=bfd -flto -Wl,-O3 -Wl,--as-needed -Wl,--gc-sections -Wl,--strip-all -Wl,-z,norelro -Wl,--build-id=none -Wl,--relax -Wl,-z,noseparate-code -Wl,-znow"
+RUSTFLAGS="-C debuginfo=0 -C target-cpu=native -C opt-level=3 -C codegen-units=1 -C strip=symbols"

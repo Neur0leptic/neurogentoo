@@ -1,0 +1,4 @@
+# Existing user-approved DWL build policy, extracted from the installer.
+CC=clang
+CFLAGS="-O3 -march=native -mtune=native -pipe -fno-math-errno -flto=thin -fomit-frame-pointer -fno-semantic-interposition -fno-stack-protector -fno-stack-clash-protection -fno-sanitize=all -fno-dwarf2-cfi-asm -ffp-contract=fast"
+LDFLAGS="-fuse-ld=lld -flto=thin -rtlib=compiler-rt -Wl,-O3 -Wl,--lto-O3 -Wl,--as-needed -Wl,--gc-sections -Wl,--icf=all -Wl,--strip-all -Wl,-z,norelro -Wl,--build-id=none -Wl,--relax -Wl,-z,noseparate-code -Wl,-znow"

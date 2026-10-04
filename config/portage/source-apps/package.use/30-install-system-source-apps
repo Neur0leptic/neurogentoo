@@ -1,0 +1,2 @@
+# nchat's wide-character terminal interface requires ncursesw.
+sys-libs/ncurses unicode

@@ -1,0 +1,7 @@
+media-gfx/imv bmp gif jpeg png svg wayland webp -X
+# Ninja for the nchat CMake build uses the selected Samurai provider.
+app-alternatives/ninja -reference samurai
+net-misc/aria2 ssl -adns -bittorrent -gnutls -libuv -libxml2 -metalink -nettle -nls -scripts -sqlite -ssh -tcmalloc -xmlrpc
+media-video/mpv cli lua lua_single_target_luajit pipewire wayland -X -alsa -libmpv
+app-text/tessdata_fast l10n_de
+app-text/tesseract png

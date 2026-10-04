@@ -1,0 +1,53 @@
+#!/bin/sh
+set -eu
+
+: "${interface:?udhcpc did not provide an interface}"
+
+netmask_to_prefix() {
+    old_ifs=$IFS
+    IFS=.
+    set -- $1
+    IFS=$old_ifs
+    prefix=0
+    for octet in "$@"; do
+        case "$octet" in
+            255) prefix=$((prefix + 8)) ;;
+            254) prefix=$((prefix + 7)) ;;
+            252) prefix=$((prefix + 6)) ;;
+            248) prefix=$((prefix + 5)) ;;
+            240) prefix=$((prefix + 4)) ;;
+            224) prefix=$((prefix + 3)) ;;
+            192) prefix=$((prefix + 2)) ;;
+            128) prefix=$((prefix + 1)) ;;
+            0) ;;
+            *) return 1 ;;
+        esac
+    done
+    printf '%s' "$prefix"
+}
+
+case "${1:-}" in
+    deconfig)
+        ip addr flush dev "$interface" scope global || true
+        ip route del default dev "$interface" 2>/dev/null || true
+        ;;
+    bound|renew)
+        prefix=24
+        [ -z "${subnet:-}" ] || prefix=$(netmask_to_prefix "$subnet")
+        ip addr flush dev "$interface" scope global || true
+        if [ -n "${broadcast:-}" ]; then
+            ip addr add "$ip/$prefix" broadcast "$broadcast" dev "$interface"
+        else
+            ip addr add "$ip/$prefix" dev "$interface"
+        fi
+        ip link set "$interface" up
+        ip route del default dev "$interface" 2>/dev/null || true
+        metric=100
+        case "$interface" in wl*) metric=200 ;; esac
+        for router_address in ${router:-}; do
+            ip route add default via "$router_address" dev "$interface" metric "$metric"
+            break
+        done
+        ;;
+esac
+exit 0

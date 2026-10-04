@@ -1,0 +1,3 @@
+# A fork is a recipe source, not approval to replace packages with its old/live
+# ebuilds. Unmask only exact recipes selected by an installer stage.
+*/*::neurogentoo

@@ -1,0 +1,4 @@
+media-libs/mesa video_cards_radeonsi vaapi vulkan proprietary-codecs
+x11-libs/libdrm video_cards_amdgpu
+gui-libs/wlroots vulkan
+media-video/ffmpeg vaapi

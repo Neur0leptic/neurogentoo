@@ -1,0 +1,2 @@
+# The detected snd_sof driver consumes firmware and topology from this provider.
+sys-firmware/sof-firmware

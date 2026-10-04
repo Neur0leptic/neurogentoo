@@ -1,0 +1,1 @@
+net-p2p/transmission cli -gtk -qt6 -systemd

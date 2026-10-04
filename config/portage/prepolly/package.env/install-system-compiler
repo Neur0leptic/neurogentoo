@@ -1,0 +1,5 @@
+sys-devel/gcc gcc_o3_lto gcc_busybox_awk
+sys-libs/glibc gcc_o3_lto
+sys-devel/binutils gcc_o3_lto
+sys-libs/binutils-libs gcc_o3_lto
+net-misc/openssh openssh_no_sandbox

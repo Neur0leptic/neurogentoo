@@ -1,0 +1,3 @@
+post_src_configure() {
+    sed -i 's/deny-warnings = true/deny-warnings = false/' "${S}/bootstrap.toml"
+}

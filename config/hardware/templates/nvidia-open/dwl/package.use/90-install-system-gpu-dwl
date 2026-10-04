@@ -1,0 +1,3 @@
+x11-drivers/nvidia-drivers modules kernel-open wayland -X -tools -static-libs
+gui-libs/wlroots vulkan
+media-video/ffmpeg nvenc

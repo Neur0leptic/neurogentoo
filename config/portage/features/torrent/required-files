@@ -1,0 +1,5 @@
+/usr/bin/transmission-daemon
+/usr/bin/transmission-remote
+/usr/bin/hck
+/usr/bin/flaresolverr
+/etc/init.d/prowlarr

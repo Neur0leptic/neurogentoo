@@ -1,0 +1,12 @@
+# Bootstrap these before activating final Clang/Polly policy.
+llvm-core/clang
+llvm-core/lld
+llvm-core/llvm
+llvm-core/polly
+llvm-runtimes/clang-runtime[compiler-rt,sanitize]
+llvm-runtimes/compiler-rt
+llvm-runtimes/compiler-rt-sanitizers
+llvm-runtimes/libcxx
+llvm-runtimes/libcxxabi
+llvm-runtimes/libunwind
+llvm-runtimes/openmp

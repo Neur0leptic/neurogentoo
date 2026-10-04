@@ -1,0 +1,4 @@
+gui-wm/dwl::neurogentoo install-dwl
+app-misc/yazi::neurogentoo install-source-rust install-rust-thinlto
+gui-apps/ripdrag::neurogentoo install-source-rust install-rust-thinlto
+gui-apps/wayland-pipewire-idle-inhibit::neurogentoo install-source-rust

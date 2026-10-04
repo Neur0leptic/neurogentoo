@@ -1,0 +1,3 @@
+# Override only the selected applications' upstream fat-LTO release profiles.
+# Cargo environment overrides Cargo.toml without changing shared RUSTFLAGS.
+export CARGO_PROFILE_RELEASE_LTO=thin

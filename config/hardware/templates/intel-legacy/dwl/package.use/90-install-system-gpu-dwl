@@ -1,0 +1,3 @@
+media-libs/mesa video_cards_intel opengl
+media-libs/libva-intel-driver wayland -X -hybrid
+media-video/ffmpeg vaapi

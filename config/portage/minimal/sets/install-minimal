@@ -1,0 +1,27 @@
+# New-install base, matching Gentoo.md and the approved minimal reference.
+app-admin/doas
+app-alternatives/ninja[samurai,-reference]
+app-crypt/gnupg
+app-editors/neovim
+app-eselect/eselect-repository
+app-portage/cpuid2cpuflags
+app-shells/dash
+app-shells/zsh
+dev-build/cmake
+dev-lang/rust
+dev-vcs/git
+media-video/pipewire[pipewire-alsa,sound-server]
+media-video/wireplumber
+net-misc/curl
+net-misc/openssh
+net-wireless/iwd[client]
+sys-apps/busybox[savedconfig,static]
+sys-apps/iproute2
+sys-apps/pciutils
+sys-apps/util-linux
+sys-auth/seatd[builtin,server]
+sys-boot/efibootmgr
+sys-fs/dosfstools
+sys-fs/f2fs-tools
+sys-kernel/gentoo-sources
+sys-process/dcron

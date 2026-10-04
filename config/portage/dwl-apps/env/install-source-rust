@@ -1,0 +1,2 @@
+# Existing user-approved source-application flags.
+RUSTFLAGS="-C debuginfo=0 -C target-cpu=native -C opt-level=3 -C codegen-units=1 -C strip=symbols"

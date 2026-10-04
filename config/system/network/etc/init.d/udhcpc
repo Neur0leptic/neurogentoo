@@ -1,0 +1,14 @@
+#!/sbin/openrc-run
+
+description="BusyBox DHCP client for physical network interfaces"
+command="/usr/local/sbin/udhcpc-all"
+command_background="yes"
+pidfile="/run/udhcpc-all.pid"
+output_log="/var/log/udhcpc.log"
+error_log="/var/log/udhcpc.log"
+
+depend() {
+    need localmount
+    use logger
+    provide net
+}

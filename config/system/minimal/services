@@ -1,0 +1,8 @@
+agetty.tty1 default
+agetty.tty2 default
+agetty.tty3 default
+agetty.tty4 default
+agetty.tty5 default
+agetty.tty6 default
+dcron default
+seatd default

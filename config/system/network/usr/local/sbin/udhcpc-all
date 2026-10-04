@@ -1,0 +1,31 @@
+#!/bin/sh
+set -eu
+
+pids=""
+cleanup() {
+    trap - 0 1 2 15
+    for pid in $pids; do
+        kill "$pid" 2>/dev/null || true
+    done
+    wait 2>/dev/null || true
+}
+trap cleanup 0 1 2 15
+
+for path in /sys/class/net/*; do
+    interface=${path##*/}
+    [ "$interface" != lo ] || continue
+    [ -e "$path/device" ] || continue
+    case "$interface" in
+        en*|eth*|wl*) ;;
+        *) continue ;;
+    esac
+    /bin/busybox udhcpc -f -R -t 0 -i "$interface" \
+        -p "/run/udhcpc-$interface.pid" -s /etc/udhcpc/default.script &
+    pids="$pids $!"
+done
+
+[ -n "$pids" ] || {
+    printf 'udhcpc-all: no supported network interface found\n' >&2
+    exit 1
+}
+wait

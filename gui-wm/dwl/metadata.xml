@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata><longdescription>ABI-compatible dwl sources with patch and IPC protocol following the canonical dotfiles main branch through git-r3.</longdescription></pkgmetadata>

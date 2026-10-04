@@ -1,0 +1,8 @@
+# Packaged applications; DWL follows the canonical dotfiles main branch.
+=app-misc/unimatrix-0_p20260520::neurogentoo
+=app-misc/yazi-26.8.15::neurogentoo
+=app-misc/timer-1.3.0::neurogentoo
+=gui-apps/clipse-1.2.1::neurogentoo
+=gui-apps/ripdrag-0.4.12::neurogentoo
+=gui-apps/wayland-pipewire-idle-inhibit-0.7.1::neurogentoo
+=gui-wm/dwl-9999::neurogentoo

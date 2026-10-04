@@ -1,0 +1,2 @@
+x11-drivers/nvidia-drivers[modules,-kernel-open,wayland,-X,-tools,-static-libs]
+media-video/ffmpeg[nvenc]

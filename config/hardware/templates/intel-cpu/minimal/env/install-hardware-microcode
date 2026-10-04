@@ -1,0 +1,2 @@
+# Native installation: let iucode_tool select the CPUs present on this machine.
+MICROCODE_SIGNATURES="-S"

@@ -1,0 +1,4 @@
+net-im/nchat::neurogentoo install-nchat
+net-libs/libsignal-ffi::neurogentoo install-source-rust
+net-wireless/impala::neurogentoo install-source-rust install-rust-thinlto
+www-client/wiki-tui::neurogentoo install-source-rust

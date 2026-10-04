@@ -1,0 +1,3 @@
+# Match the previous nchat compiler selection while Portage owns the build.
+CC=clang
+CXX=clang++

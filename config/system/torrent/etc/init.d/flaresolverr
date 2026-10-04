@@ -1,0 +1,18 @@
+#!/sbin/openrc-run
+
+description="FlareSolverr indexer browser helper"
+command="/usr/bin/flaresolverr"
+command_user="flaresolverr:flaresolverr"
+supervisor="supervise-daemon"
+directory="/var/lib/flaresolverr"
+export HOME="/var/lib/flaresolverr"
+export HOST="127.0.0.1"
+export PORT="8191"
+
+depend() {
+    need net
+}
+
+start_pre() {
+    checkpath --directory --owner flaresolverr:flaresolverr --mode 0750 "$directory"
+}
