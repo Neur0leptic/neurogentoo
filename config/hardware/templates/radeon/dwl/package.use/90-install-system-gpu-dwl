@@ -1,1 +1,4 @@
-media-libs/mesa opengl video_cards_radeon video_cards_r600 video_cards_r300
+# r300/radeon require LLVM on amd64; Mesa's llvm USE also needs the AMDGPU
+# target, which profile/use.mask/zz-install-system-gpu unmasks for this GPU only.
+media-libs/mesa llvm llvm_slot_22 opengl video_cards_radeon video_cards_r600 video_cards_r300
+llvm-core/llvm llvm_targets_AMDGPU

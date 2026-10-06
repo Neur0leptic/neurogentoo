@@ -143,13 +143,12 @@ go-module_set_globals
 DESCRIPTION="Terminal clipboard manager with native Wayland support"
 HOMEPAGE="https://github.com/savedra1/clipse"
 SOURCE_URI="https://github.com/savedra1/clipse/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
-SOURCE_SHA256="ec906744103a611cc1045a9d65f20b13b454ee046fd979abf1341a1b78fe553e"
 SRC_URI="${SOURCE_URI} ${EGO_SUM_SRC_URI}"
 
 LICENSE="MIT Apache-2.0 BSD BSD-2 ISC WTFPL-2"
 SLOT="0"
 KEYWORDS="~amd64"
-BDEPEND="=dev-lang/go-1.27.1"
+BDEPEND=">=dev-lang/go-1.27.1"
 RDEPEND="gui-apps/wl-clipboard"
 
 src_unpack() {

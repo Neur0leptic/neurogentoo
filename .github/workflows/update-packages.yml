@@ -1,0 +1,103 @@
+# Weekly recipe updates for the overlay packages in .github/update-packages.conf.
+# A newer upstream version is prepared, checked and built in a Gentoo container,
+# then proposed as a pull request. A failure opens an issue and changes nothing.
+name: Update packages
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/**"]
+  schedule:
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+    inputs:
+      package:
+        description: "Only this package (category/name); empty checks all"
+        required: false
+        default: ""
+
+permissions: {}
+
+concurrency:
+  group: update-packages
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      matrix: ${{ steps.check.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: check
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          # Bot changes exercise one representative update; regular checks use the input.
+          ONLY_PACKAGE: ${{ github.event_name == 'push' && 'gui-apps/ripdrag' || inputs.package }}
+        run: bash .github/scripts/update-package.sh check >>"$GITHUB_OUTPUT"
+
+  update:
+    needs: check
+    if: needs.check.outputs.matrix != '[]'
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/gentoo/stage3:amd64-nomultilib-openrc
+      # Allow Portage's namespace-based network sandbox inside the container.
+      options: --cap-add=SYS_ADMIN --security-opt seccomp=unconfined
+    timeout-minutes: 330
+    defaults:
+      run:
+        shell: bash
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include: ${{ fromJSON(needs.check.outputs.matrix) }}
+    env:
+      PACKAGE: ${{ matrix.package }}
+      VERSION: ${{ matrix.version }}
+      COMMIT: ${{ matrix.commit }}
+      BASE_BRANCH: ${{ github.event.repository.default_branch }}
+    # Upstream preparation and builds receive no repository token.
+    steps:
+      - name: Prepare Gentoo tools
+        run: |
+          emerge-webrsync --quiet
+          getuto
+          # The updater uses pycargoebuild 0.17's explicit --fill-crates (-C) mode.
+          install -d /etc/portage/package.accept_keywords
+          echo '>=app-portage/pycargoebuild-0.17.0 ~amd64' >/etc/portage/package.accept_keywords/ci-tools
+          emerge --quiet --oneshot --getbinpkg --noreplace --autounmask=n \
+            dev-vcs/git app-misc/jq net-misc/wget sys-apps/patch \
+            dev-util/pkgdev dev-util/pkgcheck '>=app-portage/pycargoebuild-0.17.0'
+      - id: checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Prepare package build policy
+        run: bash .github/scripts/prepare-ci.sh "$PACKAGE" 2>&1 | tee /tmp/neurogentoo-update.log
+      - name: Test updater behavior
+        run: bash .github/tests/update-package.sh
+      - name: Update recipe
+        run: bash .github/scripts/update-package.sh update "$PACKAGE" "$VERSION" 2>&1 | tee -a /tmp/neurogentoo-update.log
+      - name: Build and smoke-test
+        run: bash .github/scripts/update-package.sh build "$PACKAGE" "$VERSION" 2>&1 | tee -a /tmp/neurogentoo-update.log
+      - name: Open pull request
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bash .github/scripts/update-package.sh publish "$PACKAGE" "$VERSION" 2>&1 | tee -a /tmp/neurogentoo-update.log
+      - name: Report failure
+        if: failure() && steps.checkout.outcome == 'success'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          UPDATE_LOG: /tmp/neurogentoo-update.log
+        run: bash .github/scripts/update-package.sh report-failure "$PACKAGE" "$VERSION"

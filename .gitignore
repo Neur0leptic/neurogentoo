@@ -1,6 +1,2 @@
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-.opencode/
 __pycache__/
 *.py[cod]

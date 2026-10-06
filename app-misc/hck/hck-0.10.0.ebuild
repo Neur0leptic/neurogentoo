@@ -1,5 +1,9 @@
+# Copyright 2026 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
 EAPI=8
 
+# BEGIN GENERATED DEPENDENCIES
 CRATES="
 	adler@1.0.2
 	aho-corasick@1.1.3
@@ -119,31 +123,18 @@ CRATES="
 	windows_x86_64_gnullvm@0.52.4
 	windows_x86_64_msvc@0.52.4
 "
-
+# END GENERATED DEPENDENCIES
 inherit cargo
 
-DESCRIPTION="A sharp cut(1) clone."
+DESCRIPTION="A sharp cut(1) clone"
 HOMEPAGE="https://github.com/sstadick/hck"
-SRC_URI="
-https://github.com/sstadick/hck/archive/refs/tags/v0.10.0.tar.gz
-${CARGO_CRATE_URIS}
-"
+SOURCE_URI="https://github.com/sstadick/hck/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
+SRC_URI="${SOURCE_URI} ${CARGO_CRATE_URIS}"
 
-LICENSE="MIT"
+LICENSE="|| ( MIT Unlicense )"
+# Dependent crate licenses
+LICENSE+=" Apache-2.0 BSD-2 MIT Unicode-DFS-2016 ZLIB"
 SLOT="0"
 KEYWORDS="~amd64"
 
-DEPEND="
-    dev-build/just
-"
-
 QA_FLAGS_IGNORED="usr/bin/hck"
-
-src_prepare() {
-    default
-}
-
-
-src_install() {
-	cargo_src_install
-}

@@ -3,8 +3,7 @@
 A Gentoo overlay and installer-policy repository forked from
 [emrakyz/emrakyz](https://github.com/emrakyz/emrakyz).
 
-This fork retains inherited ebuilds while adding desktop and CLI packages,
-Wayland-focused configuration and native policy inputs for
+It contains package recipes, Wayland desktop configuration and native policy inputs for
 [install-system](https://github.com/Neur0leptic/install-system).
 
 ## Contents
@@ -15,28 +14,30 @@ Wayland-focused configuration and native policy inputs for
 - `config/hardware/` contains firmware, microcode and graphics-policy templates.
 - `config/system/` contains OpenRC, networking and system-configuration inputs.
 
-## Additions and changes
-
-- Repository identity changed from `emrakyz` to `neurogentoo`.
-- Added minimal, DWL and full package sets, with optional torrent tools.
-- Added staged GCC/Clang, Polly and Rust compiler-policy inputs.
-- Added hardware-dependent configuration templates.
-- Added a live DWL ebuild using the canonical patch and IPC protocol from
-  `dotfiles/main`, applied to an ABI-compatible Codeberg DWL source.
-- Added recipes for applications including nchat, libsignal-ffi, cliamp,
-  impala, wiki-tui, croc, clipse and ripdrag.
-- Added binary packages for OpenCode, shfmt, LocalSend and Helium.
-- Added a newer Yazi ebuild.
-- Added declared Go and Cargo dependency inputs for the new build recipes.
-
 ## Usage and scope
 
 `neurogentoo` is a normal Portage repository using Gentoo as its master.
 Package installation and dependency resolution remain Portage's responsibility.
+Installer policy provides minimal, DWL and full tiers, with optional torrent tools.
 
 The `config/` layers are consumed by the installer. Adding the overlay alone
 does not activate its compiler settings or deploy system configuration.
 These templates are opinionated, not universal Gentoo defaults.
+
+The DWL recipe uses the shared desktop patch and IPC protocol from
+[dotfiles](https://github.com/Neur0leptic/dotfiles). Chezmoi manages the runtime
+desktop settings separately.
+
+## Package updates
+
+The **Update packages** GitHub Actions workflow checks the packages listed in
+`.github/update-packages.conf` weekly. It can also be run manually for one package.
+Successful updates open a pull request after recipe checks, compilation and a
+basic command-line test. Pull requests are merged manually; failed updates leave
+the current recipes unchanged and open an issue with the workflow log.
+
+Enable **Allow GitHub Actions to create and approve pull requests** under
+**Settings → Actions → General** before the first run.
 
 ## Credits
 

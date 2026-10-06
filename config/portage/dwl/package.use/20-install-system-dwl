@@ -8,12 +8,15 @@ gui-apps/swaylock-effects pam -gdk-pixbuf -man
 gui-apps/waybar mpris network pipewire tray udev wifi
 gui-libs/wlroots:0.20 drm libinput session
 gui-libs/xdg-desktop-portal-wlr -elogind -systemd
-# Mesa's llvm USE requires LLVM's AMDGPU target. The base policy masks it; this
-# layer's profile/use.mask/zz-install-system-dwl unmasks it for the desktop only.
-llvm-core/llvm llvm_targets_AMDGPU
+# Required by gtk+[X] for GURU's Helium (see x11-libs/gtk+ below).
+media-libs/libepoxy X
+media-libs/libglvnd X
 media-libs/libpng apng
 media-libs/libvpx postproc
-media-libs/mesa llvm llvm_slot_22 opengl wayland -X -opencl -vulkan
+# Hardware drivers (crocus, iris, radeonsi/ACO) do not use LLVM; it only adds the
+# software fallback, and mesa[llvm] would need LLVM's masked AMDGPU target. Only the
+# old-Radeon hardware template enables it, because r300/radeon cannot build without.
+media-libs/mesa -llvm opengl wayland -X -opencl -vulkan
 media-video/ffmpeg gpl opus x264
 media-video/pipewire bluetooth dbus extra pipewire-alsa sound-server -elogind -system-service -systemd
 media-video/wireplumber -elogind -system-service -systemd
@@ -21,12 +24,17 @@ net-wireless/iwd client
 # Helium needs libcups; use the existing TLS provider without enabling cupsd.
 net-print/cups openssl
 sys-apps/eza -git
+# login must run the PAM session: pam_xdg creates XDG_RUNTIME_DIR for Wayland.
+sys-apps/shadow pam
 sys-apps/xdg-desktop-portal -systemd
 sys-apps/xdg-desktop-portal-gtk wayland -X
 sys-auth/seatd builtin server
 sys-fs/udisks daemon introspection -elogind -lvm -smart -systemd
 sys-process/psmisc -X
-x11-libs/gtk+:3 -X wayland
+# GURU's Helium requires GTK's X11 backend (gtk+[X] also needs cairo, libepoxy and
+# libglvnd with X). Helium still runs natively on Wayland; no X server or XWayland.
+x11-libs/cairo X
+x11-libs/gtk+:3 X wayland
 x11-misc/rofi drun wayland -X -windowmode
 x11-terms/kitty -X wayland
 # Native Wayland needs dbus; the existing global PGO needs jumbo-build.

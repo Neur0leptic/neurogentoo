@@ -1,3 +1,2 @@
-=dev-util/opencode-bin-1.18.25::neurogentoo
-=dev-util/shfmt-bin-3.14.1::neurogentoo
-=net-misc/localsend-bin-1.18.2::neurogentoo
+dev-util/shfmt-bin::neurogentoo
+net-misc/localsend-bin::neurogentoo

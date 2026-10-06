@@ -1,0 +1,2 @@
+# Mesa's r300/radeon drivers need LLVM with its AMDGPU target.
+-llvm_targets_AMDGPU

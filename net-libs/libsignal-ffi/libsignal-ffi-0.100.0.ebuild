@@ -601,12 +601,14 @@ inherit cargo multilib
 DESCRIPTION="Pinned libsignal static FFI library for nchat's Signal backend"
 HOMEPAGE="https://github.com/signalapp/libsignal"
 SOURCE_URI="https://github.com/signalapp/libsignal/archive/refs/tags/v${PV}.tar.gz -> libsignal-${PV}.tar.gz"
-SOURCE_SHA256="f6b2a5c3bbdb3a89e78a186691d5a8d1b47b0381bbf621f95b7e7d2891a4a233"
+CARGO_UPDATE_DIRS="rust/bridge/ffi"
 SRC_URI="${SOURCE_URI} ${CARGO_CRATE_URIS}
 	https://github.com/google/boringssl/archive/${BORINGSSL_COMMIT}.tar.gz -> boringssl-${BORINGSSL_COMMIT}.tar.gz"
 S="${WORKDIR}/libsignal-${PV}"
 
-LICENSE="AGPL-3 GPL-3+ Apache-2.0 BSD BSD-2 CDLA-Permissive-2.0 ISC MIT MPL-2.0 openssl Unicode-3.0 ZLIB"
+LICENSE="AGPL-3"
+# Dependent crate licenses
+LICENSE+=" GPL-3+ Apache-2.0 BSD BSD-2 CDLA-Permissive-2.0 ISC MIT MPL-2.0 openssl Unicode-3.0 ZLIB"
 SLOT="0"
 KEYWORDS="~amd64"
 BDEPEND="dev-build/cmake

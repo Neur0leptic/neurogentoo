@@ -95,14 +95,13 @@ DESCRIPTION="Terminal countdown timer"
 HOMEPAGE="https://github.com/caarlos0/timer"
 SOURCE_COMMIT="50561bc33b32d1a07cddf8264e3cbb134f425463"
 SOURCE_URI="https://github.com/caarlos0/timer/archive/${SOURCE_COMMIT}.tar.gz -> timer-${SOURCE_COMMIT}.tar.gz"
-SOURCE_SHA256="ead7c9eeb52ed770043cc1b4d51a40e96b9100cc8c383282cfbd702884a8d6f5"
 SRC_URI="${SOURCE_URI} ${EGO_SUM_SRC_URI}"
 S="${WORKDIR}/timer-${SOURCE_COMMIT}"
 
 LICENSE="MIT Apache-2.0 BSD BSD-2"
 SLOT="0"
 KEYWORDS="~amd64"
-BDEPEND="=dev-lang/go-1.27.1"
+BDEPEND=">=dev-lang/go-1.27.1"
 
 src_unpack() {
 	export GOTOOLCHAIN=local GOSUMDB=off

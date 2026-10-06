@@ -534,11 +534,12 @@ inherit cargo
 DESCRIPTION="Terminal file manager with native Sixel previews"
 HOMEPAGE="https://yazi-rs.github.io/"
 SOURCE_URI="https://github.com/sxyazi/yazi/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
-SOURCE_SHA256="60bd4ca56398f0f6ea6dcf88cc18e325583bf5328aeec51d396070944a9495c8"
+CARGO_UPDATE_DIRS="yazi-fm yazi-cli"
 SRC_URI="${SOURCE_URI} ${CARGO_CRATE_URIS}"
 
-# Includes the licenses selected from the declared registry crates.
-LICENSE="MIT Apache-2.0 BSD BSD-2 Boost-1.0 BlueOak-1.0.0 CC0-1.0 CDLA-Permissive-2.0 ISC MPL-2.0 Unicode-3.0 ZLIB"
+LICENSE="MIT"
+# Dependent crate licenses
+LICENSE+=" Apache-2.0 BSD BSD-2 Boost-1.0 BlueOak-1.0.0 CC0-1.0 CDLA-Permissive-2.0 ISC MPL-2.0 Unicode-3.0 ZLIB"
 SLOT="0"
 KEYWORDS="~amd64"
 

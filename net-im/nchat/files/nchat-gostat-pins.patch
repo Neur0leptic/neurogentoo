@@ -1,0 +1,17 @@
+Use the checked-in union of both upstream Go module requirements. All Go access
+still goes through go-module.eclass's file:// proxy of declared distfiles.
+
+--- a/lib/gostat/assemble.sh
++++ b/lib/gostat/assemble.sh
+@@ -82,5 +82,10 @@
+ cat "$WM_DIR/go.sum" "$SG_DIR/go.sum" | sort -u > "$STAGE/go.sum"
+-
++
++# Seed the graph with the packager's union of the pinned upstream requirements.
++# Dependency access still uses the declared, offline Go module proxy.
++sed -e "s|@WM_DIR@|$WM_DIR|g" -e "s|@SG_DIR@|$SG_DIR|g" \
++  "$(dirname "$0")/go.mod" > "$STAGE/go.mod"
++
+ # --- build the single combined c-archive ---
+ cd "$STAGE"
+ go build -mod=mod -buildmode="$BUILDMODE" "${GOFLAGS_EXTRA[@]}" -o "$OUT/$LIB" .

@@ -1,4 +1,4 @@
 net-p2p/transmission[cli]
-=app-misc/hck-0.10.0::neurogentoo
+app-misc/hck::neurogentoo
 www-apps/prowlarr-bin
 www-apps/flaresolverr

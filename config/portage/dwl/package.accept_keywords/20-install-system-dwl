@@ -2,7 +2,7 @@ app-admin/chezmoi ~amd64
 app-arch/ouch ~amd64
 app-misc/brightnessctl ~amd64
 app-shells/zoxide ~amd64
-=dev-lang/go-1.27.1 ~amd64
+>=dev-lang/go-1.27.1 ~amd64
 gui-apps/satty ~amd64
 gui-apps/swaylock-effects ~amd64
 gui-apps/wf-recorder ~amd64
@@ -12,4 +12,4 @@ gui-apps/wlsunset ~amd64
 media-sound/wiremix ~amd64
 net-wireless/bluetui ~amd64
 sys-auth/pam_xdg ~amd64
-=www-client/helium-bin-0.15.5.1::neurogentoo ~amd64
+www-client/helium-bin ~amd64

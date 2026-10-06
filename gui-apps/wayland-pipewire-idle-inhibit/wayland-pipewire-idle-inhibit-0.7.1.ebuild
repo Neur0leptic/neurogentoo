@@ -231,10 +231,11 @@ inherit cargo
 DESCRIPTION="Inhibit Wayland idle while PipeWire audio is playing"
 HOMEPAGE="https://github.com/rafaelrc7/wayland-pipewire-idle-inhibit"
 SOURCE_URI="https://github.com/rafaelrc7/wayland-pipewire-idle-inhibit/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
-SOURCE_SHA256="6644562aa9ac0210ae7203453f7d3d38fe9d74059e0864d60e13b45033dc2652"
 SRC_URI="${SOURCE_URI} ${CARGO_CRATE_URIS}"
 
-LICENSE="GPL-3 Apache-2.0 Apache-2.0-with-LLVM-exceptions BSD ISC MIT MPL-2.0 Unicode-3.0 ZLIB"
+LICENSE="GPL-3"
+# Dependent crate licenses
+LICENSE+=" Apache-2.0 Apache-2.0-with-LLVM-exceptions BSD ISC MIT MPL-2.0 Unicode-3.0 ZLIB"
 SLOT="0"
 KEYWORDS="~amd64"
 RDEPEND="dev-libs/wayland

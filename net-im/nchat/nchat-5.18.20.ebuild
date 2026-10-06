@@ -130,10 +130,10 @@ go-module_set_globals
 DESCRIPTION="Terminal chat client with Signal, Telegram and WhatsApp support"
 HOMEPAGE="https://github.com/d99kris/nchat"
 SOURCE_URI="https://github.com/d99kris/nchat/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
-SOURCE_SHA256="49312e609ea3140246ed434c402c714f9e461f2f6381b349046bc3c29d579d5c"
 DEPS_FILES="lib/sgchat/go/go.sum lib/sgchat/go/ext/signal/go.sum lib/wmchat/go/go.sum lib/wmchat/go/ext/whatsmeow/go.sum"
 LIBSIGNAL_VERSION="0.100.0"
 LIBSIGNAL_BUILD_REF="c5c17f8ce9e89352c143ef0d2feaf306fa6966b3"
+LIBSIGNAL_VERSION_FILE="lib/sgchat/go/ext/signal/pkg/libsignalgo/version.go"
 SRC_URI="${SOURCE_URI} ${EGO_SUM_SRC_URI}"
 
 LICENSE="GPL-3 AGPL-3 Apache-2.0 BSD BSD-2 Boost-1.0 ISC MIT MPL-2.0"
@@ -149,7 +149,7 @@ RDEPEND="dev-db/sqlite:3
 DEPEND="${RDEPEND}
 	=net-libs/libsignal-ffi-${LIBSIGNAL_VERSION}::neurogentoo"
 BDEPEND="app-arch/unzip
-	=dev-lang/go-1.27.1
+	>=dev-lang/go-1.27.1
 	dev-util/gperf
 	llvm-core/clang
 	virtual/pkgconfig"
@@ -166,9 +166,9 @@ src_prepare() {
 	# Both Go protocols share one runtime in the internal-static build. Seed the
 	# generated module with the pinned union, rather than discovering versions.
 	cp "${FILESDIR}/gostat-go.mod" lib/gostat/go.mod || die
-	eapply "${FILESDIR}/nchat-5.18.20-gostat-pins.patch"
+	eapply "${FILESDIR}/nchat-gostat-pins.patch"
 	grep -qxF "const Version = \"v${LIBSIGNAL_VERSION}\"" \
-		lib/sgchat/go/ext/signal/pkg/libsignalgo/version.go || die "libsignal ABI changed"
+		"${LIBSIGNAL_VERSION_FILE}" || die "libsignal ABI changed"
 	local acquisition=lib/sgchat/go/libsignal.cmake
 	grep -qxF "set(LIBSIGNAL_BUILD_REF \"${LIBSIGNAL_BUILD_REF}\")" \
 		"${acquisition}" || die "libsignal build revision changed"

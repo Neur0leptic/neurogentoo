@@ -119,10 +119,11 @@ inherit cargo
 DESCRIPTION="Drag and drop files to and from the terminal"
 HOMEPAGE="https://github.com/nik012003/ripdrag"
 SOURCE_URI="https://github.com/nik012003/ripdrag/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
-SOURCE_SHA256="ffa685c42e84558cc47d8bd5713f8a68f8cd8e313be55a111a0bc43bf1e220de"
 SRC_URI="${SOURCE_URI} ${CARGO_CRATE_URIS}"
 
-LICENSE="GPL-3 Apache-2.0 Apache-2.0-with-LLVM-exceptions MIT Unicode-DFS-2016"
+LICENSE="GPL-3"
+# Dependent crate licenses
+LICENSE+=" Apache-2.0 Apache-2.0-with-LLVM-exceptions MIT Unicode-DFS-2016"
 SLOT="0"
 KEYWORDS="~amd64"
 RDEPEND=">=gui-libs/gtk-4.8:4[wayland]

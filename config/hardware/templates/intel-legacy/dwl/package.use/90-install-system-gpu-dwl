@@ -1,6 +1,6 @@
 media-libs/mesa video_cards_intel opengl
 # Mesa's Intel drivers need libclc's SPIR-V kernels. Its GPU OpenCL targets are
-# unused (OpenCL is off), and NVPTX stays masked by the base policy.
+# unused (OpenCL is off) and need LLVM backends that the base policy masks.
 llvm-runtimes/libclc spirv -video_cards_nvidia -video_cards_r600 -video_cards_radeonsi
 media-libs/libva-intel-driver wayland -X -hybrid
 media-video/ffmpeg vaapi
