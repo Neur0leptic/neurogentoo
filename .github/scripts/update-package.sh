@@ -6,6 +6,7 @@
 #   build   PACKAGE VERSION         build it in this Gentoo container and run its smoke test
 #   publish PACKAGE VERSION         commit to a branch and open a pull request (merge if "auto")
 #   report-failure PACKAGE VERSION  open or update an issue; the current recipe stays in place
+#   report-run-failure              report failed matrix jobs, including container/tool setup
 #
 # The workflow passes COMMIT for snapshot packages and BASE_BRANCH for pull requests.
 # All commands need git, curl and jq; update and build also need Portage, pkgdev,
@@ -471,11 +472,37 @@ Log: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 	fi
 }
 
+cmd_report_run_failure() {
+	local jobs entries entry package version id work
+	jobs="$(api GET "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100")"
+	entries="$(jq -c '.[]' <<<"${UPDATE_MATRIX:?UPDATE_MATRIX is required}")"
+	work="$(mktemp -d)"
+	while IFS= read -r entry; do
+		[[ -n "$entry" ]] || continue
+		package="$(jq -r '.package' <<<"$entry")"
+		version="$(jq -r '.version' <<<"$entry")"
+		conf_field "$package" 2 >/dev/null
+		id="$(jq -r --arg name "Update $package $version" '
+			[.jobs[] | select(.name == $name and
+				(.conclusion == "failure" or .conclusion == "timed_out"))] |
+			.[0].id // empty' <<<"$jobs")"
+		[[ -n "$id" ]] || continue
+		[[ "$id" =~ ^[0-9]+$ ]] || die "invalid failed Actions job ID"
+		# A separate trusted runner can report even when the Gentoo container never
+		# reached checkout. GitHub's downloaded job logs already mask workflow secrets.
+		if ! api GET "/repos/$GITHUB_REPOSITORY/actions/jobs/$id/logs" >"$work/job.log"; then
+			printf 'Job log download failed; use the linked Actions run.\n' >"$work/job.log"
+		fi
+		UPDATE_LOG="$work/job.log" cmd_report_failure "$package" "$version"
+	done <<<"$entries"
+	rm -rf -- "$work"
+}
+
 main() {
 	local command="${1:-}"
 	case "$command" in
-		check)
-			cmd_check
+		check | report-run-failure)
+			"cmd_${command//-/_}"
 			;;
 		update | build | publish | report-failure)
 			(($# == 3)) || die "usage: ${0##*/} $command PACKAGE VERSION"
@@ -484,7 +511,7 @@ main() {
 			"cmd_${command//-/_}" "$2" "$3"
 			;;
 		*)
-			die "usage: ${0##*/} check | {update|build|publish|report-failure} PACKAGE VERSION"
+			die "usage: ${0##*/} {check|report-run-failure} | {update|build|publish|report-failure} PACKAGE VERSION"
 			;;
 	esac
 }

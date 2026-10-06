@@ -242,6 +242,27 @@ test_failure_report() {
 	assert grep -qF 'https://github.com/example/repo/actions/runs/123' "$fixture/issue.body"
 }
 
+test_early_failure_report() {
+	make_package
+	printf 'app-misc/yazi cargo pr yazi --version\n' >>"$conf"
+	export GITHUB_REPOSITORY=example/repo GITHUB_RUN_ID=123
+	export UPDATE_MATRIX='[{"package":"gui-apps/ripdrag","version":"0.4.13"},{"package":"app-misc/yazi","version":"26.8.15"}]'
+	api() {
+		case "$2" in
+			*/jobs\?*) printf '{"jobs":[{"id":7,"name":"Update gui-apps/ripdrag 0.4.13","conclusion":"failure"},{"id":8,"name":"Update app-misc/yazi 26.8.15","conclusion":"success"}]}\n' ;;
+			*/jobs/7/logs) printf 'controlled tool setup failure\n' ;;
+			*) die "unexpected reporter request: $2" ;;
+		esac
+	}
+	cmd_report_failure() {
+		printf '%s %s\n' "$1" "$2" >>"$fixture/reports"
+		assert grep -qx 'controlled tool setup failure' "$UPDATE_LOG"
+	}
+	cmd_report_run_failure
+	assert grep -qx 'gui-apps/ripdrag 0.4.13' "$fixture/reports"
+	assert test "$(wc -l <"$fixture/reports")" == 1
+}
+
 test_system_guard() {
 	expect_failure 'GITHUB_ACTIONS=false bash "$UPDATER" update gui-apps/ripdrag 0.4.13'
 	assert grep -q 'disposable Gentoo Actions container' "$fixture/failure.log"
@@ -261,7 +282,7 @@ fi
 tests=(test_set_var test_command_substitution_failure test_ego_sum test_cargo_members
 	test_nchat_version_location test_gostat_mvs test_policy_files test_ci_resources test_update_detection
 	test_check_api_failure test_build_arguments test_build_and_smoke_failures test_nchat_build_arguments test_pr_only
-	test_failure_report test_system_guard test_unrelated_changes)
+	test_failure_report test_early_failure_report test_system_guard test_unrelated_changes)
 for test in "${tests[@]}"; do
 	bash "$test_script" --case "$test"
 	printf 'PASS %s\n' "$test"

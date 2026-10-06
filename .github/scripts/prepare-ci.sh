@@ -66,7 +66,7 @@ prepare_ci() {
 	FEATURES="userpriv usersandbox sandbox network-sandbox" \
 		emerge --oneshot --getbinpkg --binpkg-respect-use=y --autounmask=n \
 			llvm-core/clang:22 llvm-core/lld:22 llvm-core/polly:22 \
-			'llvm-runtimes/clang-runtime:22[compiler-rt,libcxx,polly]' \
+			'llvm-runtimes/clang-runtime:22[compiler-rt,polly]' \
 			llvm-runtimes/libcxx:22 llvm-runtimes/libcxxabi:22 \
 			llvm-runtimes/libunwind:22 dev-lang/rust
 	apply_ci_layers /etc/portage

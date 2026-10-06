@@ -42,6 +42,7 @@ jobs:
         run: bash .github/scripts/update-package.sh check >>"$GITHUB_OUTPUT"
 
   update:
+    name: Update ${{ matrix.package }} ${{ matrix.version }}
     needs: check
     if: needs.check.outputs.matrix != '[]'
     runs-on: ubuntu-latest
@@ -77,27 +78,39 @@ jobs:
           install -d /etc/portage/package.accept_keywords
           echo '>=app-portage/pycargoebuild-0.17.0 ~amd64' >/etc/portage/package.accept_keywords/ci-tools
           emerge --quiet --oneshot --getbinpkg --noreplace --autounmask=n \
-            dev-vcs/git app-misc/jq net-misc/wget sys-apps/patch \
+            dev-vcs/git app-misc/jq net-misc/wget sys-devel/patch \
             dev-util/pkgdev dev-util/pkgcheck '>=app-portage/pycargoebuild-0.17.0'
       - id: checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Prepare package build policy
-        run: bash .github/scripts/prepare-ci.sh "$PACKAGE" 2>&1 | tee /tmp/neurogentoo-update.log
+        run: bash .github/scripts/prepare-ci.sh "$PACKAGE"
       - name: Test updater behavior
         run: bash .github/tests/update-package.sh
       - name: Update recipe
-        run: bash .github/scripts/update-package.sh update "$PACKAGE" "$VERSION" 2>&1 | tee -a /tmp/neurogentoo-update.log
+        run: bash .github/scripts/update-package.sh update "$PACKAGE" "$VERSION"
       - name: Build and smoke-test
-        run: bash .github/scripts/update-package.sh build "$PACKAGE" "$VERSION" 2>&1 | tee -a /tmp/neurogentoo-update.log
+        run: bash .github/scripts/update-package.sh build "$PACKAGE" "$VERSION"
       - name: Open pull request
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: bash .github/scripts/update-package.sh publish "$PACKAGE" "$VERSION" 2>&1 | tee -a /tmp/neurogentoo-update.log
-      - name: Report failure
-        if: failure() && steps.checkout.outcome == 'success'
+        run: bash .github/scripts/update-package.sh publish "$PACKAGE" "$VERSION"
+
+  report-failure:
+    needs: [check, update]
+    if: always() && needs.update.result == 'failure'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Report failed updates
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          UPDATE_LOG: /tmp/neurogentoo-update.log
-        run: bash .github/scripts/update-package.sh report-failure "$PACKAGE" "$VERSION"
+          UPDATE_MATRIX: ${{ needs.check.outputs.matrix }}
+        run: bash .github/scripts/update-package.sh report-run-failure
