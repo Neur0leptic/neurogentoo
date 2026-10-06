@@ -30,6 +30,8 @@ case "${1:-}" in
     deconfig)
         ip addr flush dev "$interface" scope global || true
         ip route del default dev "$interface" 2>/dev/null || true
+        # udhcpc does not raise the link itself; DHCP discovery needs it up.
+        ip link set "$interface" up
         ;;
     bound|renew)
         prefix=24

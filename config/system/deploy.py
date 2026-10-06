@@ -141,7 +141,8 @@ def merge(kind, current, wanted, previous):
             lines = [line for line in lines if not re.match(r'^\s*nameserver\s', line)]
             lines.extend(line + '\n' for line in required)
     elif kind == 'pam':
-        if not any(re.search(r'^session\s+.*\bpam_xdg\.so\b', line) for line in active(current)):
+        # A leading '-' only silences a missing module; the session entry still exists.
+        if not any(re.search(r'^-?session\s+.*\bpam_xdg\.so\b', line) for line in active(current)):
             lines.extend(line + '\n' for line in required)
     elif kind in ('lines', 'strict-lines'):
         present = active(current)

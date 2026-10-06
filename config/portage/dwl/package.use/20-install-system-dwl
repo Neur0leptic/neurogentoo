@@ -8,6 +8,9 @@ gui-apps/swaylock-effects pam -gdk-pixbuf -man
 gui-apps/waybar mpris network pipewire tray udev wifi
 gui-libs/wlroots:0.20 drm libinput session
 gui-libs/xdg-desktop-portal-wlr -elogind -systemd
+# Mesa's llvm USE requires LLVM's AMDGPU target. The base policy masks it; this
+# layer's profile/use.mask/zz-install-system-dwl unmasks it for the desktop only.
+llvm-core/llvm llvm_targets_AMDGPU
 media-libs/libpng apng
 media-libs/libvpx postproc
 media-libs/mesa llvm llvm_slot_22 opengl wayland -X -opencl -vulkan

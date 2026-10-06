@@ -1,0 +1,2 @@
+# Mesa's llvm USE requires LLVM's AMDGPU target; the minimal base keeps it masked.
+-llvm_targets_AMDGPU

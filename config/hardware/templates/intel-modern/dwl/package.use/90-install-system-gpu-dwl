@@ -1,3 +1,6 @@
 media-libs/mesa video_cards_intel opengl vulkan
+# Mesa's Intel drivers need libclc's SPIR-V kernels. Its GPU OpenCL targets are
+# unused (OpenCL is off), and NVPTX stays masked by the base policy.
+llvm-runtimes/libclc spirv -video_cards_nvidia -video_cards_r600 -video_cards_radeonsi
 gui-libs/wlroots vulkan
 media-video/ffmpeg vaapi
