@@ -28,6 +28,9 @@ prepare_ci() {
 	install -d /etc/portage/package.accept_keywords
 	ci_keywords >/etc/portage/package.accept_keywords/ci-go
 	printf 'MAKEOPTS="-j%s"\n' "$(nproc)" >>/etc/portage/make.conf
+	# pkgcore (pkgdev, pkgcheck) reads only /etc/portage/repos.conf once it exists;
+	# unlike Portage, it then ignores the built-in Gentoo repository definition.
+	install -D -m 0644 /usr/share/portage/config/repos.conf /etc/portage/repos.conf/gentoo.conf
 	configure_overlay "$1"
 	# The updater regenerates Go dependency lists, and its tests need Go too.
 	FEATURES="userpriv usersandbox sandbox network-sandbox" \
