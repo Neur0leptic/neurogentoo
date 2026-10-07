@@ -77,9 +77,15 @@ jobs:
           # The updater uses pycargoebuild 0.17's explicit --fill-crates (-C) mode.
           install -d /etc/portage/package.accept_keywords
           echo '>=app-portage/pycargoebuild-0.17.0 ~amd64' >/etc/portage/package.accept_keywords/ci-tools
-          emerge --quiet --oneshot --getbinpkg --noreplace --autounmask=n \
+          # Built from source: installing these from binary packages failed in this
+          # container ("error sourcing ebuild" for the package's build-info copy).
+          if ! emerge --quiet --oneshot --noreplace --autounmask=n \
             dev-vcs/git app-misc/jq net-misc/wget sys-devel/patch \
-            dev-util/pkgdev dev-util/pkgcheck '>=app-portage/pycargoebuild-0.17.0'
+            dev-util/pkgdev dev-util/pkgcheck '>=app-portage/pycargoebuild-0.17.0'; then
+            # The step output omits Portage's build logs, which hold the actual cause.
+            find /var/tmp/portage -name build.log -exec tail -n 100 {} + || true
+            exit 1
+          fi
       - id: checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
