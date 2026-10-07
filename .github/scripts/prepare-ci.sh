@@ -22,6 +22,9 @@ prepare_ci() {
 	[[ "${GITHUB_ACTIONS:-}" == true && -f /etc/gentoo-release && "$EUID" == 0 ]] ||
 		die "prepare-ci is only for a disposable Gentoo Actions container"
 	[[ "$(uname -m)" == x86_64 ]] || die "CI must run on amd64"
+	# actions/checkout records safe.directory under a temporary HOME, and these
+	# steps run as root on a checkout owned by the runner user.
+	git config --global --add safe.directory "$repo_root"
 	install -d /etc/portage/package.accept_keywords
 	ci_keywords >/etc/portage/package.accept_keywords/ci-go
 	printf 'MAKEOPTS="-j%s"\n' "$(nproc)" >>/etc/portage/make.conf
