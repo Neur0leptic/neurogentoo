@@ -159,8 +159,12 @@ test_build_arguments() {
 	emerge() { printf '%s\n' "$@" >>"$fixture/emerge.args"; printf 'FEATURES=%s\n' "$FEATURES" >>"$fixture/emerge.args"; }
 	runuser() { printf '%s\n' "$@" >"$fixture/smoke.args"; }
 	cmd_build gui-apps/ripdrag 0.4.13
-	assert grep -qxF -- --pretend "$fixture/emerge.args"
-	assert test "$(grep -cFx -- --autounmask=n "$fixture/emerge.args")" == 2
+	for option in --autounmask-use=y --autounmask-license=n --autounmask-keep-keywords=y \
+		--autounmask-keep-masks=y --autounmask-continue=y; do
+		assert grep -qxF -- "$option" "$fixture/emerge.args"
+	done
+	# An explicit --binpkg-respect-use would turn --autounmask-use off.
+	assert test "$(grep -c -- '^--binpkg-respect-use' "$fixture/emerge.args")" == 0
 	assert grep -qxF -- --usepkg-exclude=gui-apps/ripdrag::neurogentoo "$fixture/emerge.args"
 	assert grep -q '^FEATURES=.*network-sandbox' "$fixture/emerge.args"
 	assert grep -qxF 'ripdrag --help' "$fixture/smoke.args"
@@ -186,7 +190,7 @@ test_nchat_build_arguments() {
 	runuser() { :; }
 	cmd_build net-im/nchat 5.19.18
 	assert grep -qxF -- '--usepkg-exclude=net-im/nchat::neurogentoo net-libs/libsignal-ffi::neurogentoo' "$fixture/emerge.args"
-	assert test "$(grep -cFx -- '=net-libs/libsignal-ffi-0.102.2::neurogentoo' "$fixture/emerge.args")" == 2
+	assert test "$(grep -cFx -- '=net-libs/libsignal-ffi-0.102.2::neurogentoo' "$fixture/emerge.args")" == 1
 }
 
 test_pr_only() {

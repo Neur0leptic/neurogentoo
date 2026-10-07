@@ -390,11 +390,16 @@ cmd_build() { # PACKAGE VERSION
 			"$(current_ebuild net-libs/libsignal-ffi)" net-libs/libsignal-ffi)::neurogentoo")
 		excluded+=" net-libs/libsignal-ffi::neurogentoo"
 	fi
+	# Gentoo's stock profile lacks some USE flags that dependencies of the overlay's
+	# packages need (such as gtk[wayland]); installed systems get them from the
+	# installer's policy. Portage may enable USE flags here, but never keywords,
+	# masks or licenses. Binary packages are still used only when their USE flags
+	# match: that is emerge's default, and passing --binpkg-respect-use explicitly
+	# would disable --autounmask-use.
 	FEATURES="userpriv usersandbox sandbox network-sandbox" \
-		emerge --pretend --oneshot --autounmask=n "${packages[@]}"
-	FEATURES="userpriv usersandbox sandbox network-sandbox" \
-		emerge --oneshot --getbinpkg --binpkg-respect-use=y --autounmask=n \
-		--usepkg-exclude="$excluded" "${packages[@]}"
+		emerge --oneshot --getbinpkg --autounmask=y --autounmask-use=y \
+		--autounmask-license=n --autounmask-keep-keywords=y --autounmask-keep-masks=y \
+		--autounmask-continue=y --usepkg-exclude="$excluded" "${packages[@]}"
 	# Upstream code runs unprivileged, as in Portage's build (FEATURES=userpriv).
 	runuser -u portage -- env TERM=dumb bash -c "$(conf_field "$1" 4)"
 }
