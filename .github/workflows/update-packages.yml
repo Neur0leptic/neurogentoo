@@ -48,8 +48,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: docker.io/gentoo/stage3:amd64-nomultilib-openrc
-      # Allow Portage's namespace-based network sandbox inside the container.
-      options: --cap-add=SYS_ADMIN --security-opt seccomp=unconfined
+      # Allow Portage's namespace-based sandboxes inside the container; Docker's
+      # default AppArmor profile would block the mounts they need.
+      options: --cap-add=SYS_ADMIN --security-opt seccomp=unconfined --security-opt apparmor=unconfined
     timeout-minutes: 330
     defaults:
       run:
@@ -77,9 +78,7 @@ jobs:
           # The updater uses pycargoebuild 0.17's explicit --fill-crates (-C) mode.
           install -d /etc/portage/package.accept_keywords
           echo '>=app-portage/pycargoebuild-0.17.0 ~amd64' >/etc/portage/package.accept_keywords/ci-tools
-          # Built from source: installing these from binary packages failed in this
-          # container ("error sourcing ebuild" for the package's build-info copy).
-          if ! emerge --quiet --oneshot --noreplace --autounmask=n \
+          if ! emerge --quiet --oneshot --getbinpkg --noreplace --autounmask=n \
             dev-vcs/git app-misc/jq net-misc/wget sys-devel/patch \
             dev-util/pkgdev dev-util/pkgcheck '>=app-portage/pycargoebuild-0.17.0'; then
             # The step output omits Portage's build logs, which hold the actual cause.
