@@ -67,8 +67,8 @@ prepare_ci() {
 		emerge --oneshot --getbinpkg --binpkg-respect-use=y --autounmask=n \
 			llvm-core/clang:22 llvm-core/lld:22 llvm-core/polly:22 \
 			'llvm-runtimes/clang-runtime:22[compiler-rt,polly]' \
-			llvm-runtimes/libcxx:22 llvm-runtimes/libcxxabi:22 \
-			llvm-runtimes/libunwind:22 dev-lang/rust
+			'=llvm-runtimes/libcxx-22*' '=llvm-runtimes/libcxxabi-22*' \
+			'=llvm-runtimes/libunwind-22*' dev-lang/rust
 	apply_ci_layers /etc/portage
 	render_ci_make_conf "$repo_root/config/portage/clang/make.conf" /etc/portage/make.conf
 	# Keep CLI tools able to find the requested slot even if no global symlink exists.
