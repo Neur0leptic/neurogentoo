@@ -36,6 +36,9 @@ Successful updates open a pull request after recipe checks, compilation and a
 basic command-line test. Pull requests are merged manually; failed updates leave
 the current recipes unchanged and open an issue with the workflow log.
 
+The workflow compiles with Gentoo's standard profile and binary packages. The
+installer's compiler settings apply when an installed system updates.
+
 Enable **Allow GitHub Actions to create and approve pull requests** under
 **Settings → Actions → General** before the first run.
 

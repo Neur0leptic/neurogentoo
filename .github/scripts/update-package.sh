@@ -484,7 +484,8 @@ cmd_report_run_failure() {
 		conf_field "$package" 2 >/dev/null
 		id="$(jq -r --arg name "Update $package $version" '
 			[.jobs[] | select(.name == $name and
-				(.conclusion == "failure" or .conclusion == "timed_out"))] |
+				(.conclusion == "failure" or .conclusion == "timed_out" or
+				 .conclusion == "cancelled"))] |
 			.[0].id // empty' <<<"$jobs")"
 		[[ -n "$id" ]] || continue
 		[[ "$id" =~ ^[0-9]+$ ]] || die "invalid failed Actions job ID"

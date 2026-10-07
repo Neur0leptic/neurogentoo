@@ -128,29 +128,11 @@ test_gostat_mvs() {
 	assert grep -qx $'\t"example.org/shared v1.10.0"' "$fixture/recipe"
 }
 
-test_policy_files() {
+test_ci_keywords() {
 	# shellcheck source=.github/scripts/prepare-ci.sh
 	source "$scripts/prepare-ci.sh"
-	mkdir -p "$fixture/portage"
-	apply_ci_layers "$fixture/portage"
-	render_ci_make_conf "$repo_root/config/portage/clang/make.conf" "$fixture/portage/make.conf"
-	assert cmp "$repo_root/config/portage/bootstrap/profile/use.mask/install-system" "$fixture/portage/profile/use.mask/install-system"
-	assert cmp "$repo_root/config/portage/dwl-apps/env/install-rust-thinlto" "$fixture/portage/env/install-rust-thinlto"
-	assert cmp "$repo_root/config/portage/source-apps/package.env/30-install-system-source-apps" "$fixture/portage/package.env/30-install-system-source-apps"
-	assert grep -q '^USE="-\* ' "$fixture/portage/make.conf"
-	assert grep -qx 'media-libs/mesa -llvm opengl wayland -X -opencl -vulkan' "$fixture/portage/package.use/20-install-system-dwl"
-	assert test ! -d "$fixture/portage/package.unmask"
-	assert test ! -d "$fixture/portage/sets"
-}
-
-test_ci_resources() {
-	# shellcheck source=.github/scripts/prepare-ci.sh
-	source "$scripts/prepare-ci.sh"
-	CI_BUILD_JOBS=1 render_ci_make_conf "$repo_root/config/portage/clang/make.conf" "$fixture/make.conf"
-	assert grep -qx 'MAKEOPTS="-j1 -l1"' "$fixture/make.conf"
-	assert grep -q '^EMERGE_DEFAULT_OPTS="--jobs=1 --load-average=1 ' "$fixture/make.conf"
-	expect_failure 'source "$(dirname "$UPDATER")/prepare-ci.sh"; CI_BUILD_JOBS=bad render_ci_make_conf "$repo_root/config/portage/clang/make.conf" "$FIXTURE/invalid.conf"'
-	assert test ! -e "$fixture/invalid.conf"
+	assert test "$(ci_keywords | wc -l)" == 1
+	assert grep -qx '>=dev-lang/go-[0-9.]* ~amd64' <(ci_keywords)
 }
 
 test_update_detection() {
@@ -280,7 +262,7 @@ if [[ "${1:-}" == --case ]]; then
 fi
 
 tests=(test_set_var test_command_substitution_failure test_ego_sum test_cargo_members
-	test_nchat_version_location test_gostat_mvs test_policy_files test_ci_resources test_update_detection
+	test_nchat_version_location test_gostat_mvs test_ci_keywords test_update_detection
 	test_check_api_failure test_build_arguments test_build_and_smoke_failures test_nchat_build_arguments test_pr_only
 	test_failure_report test_early_failure_report test_system_guard test_unrelated_changes)
 for test in "${tests[@]}"; do

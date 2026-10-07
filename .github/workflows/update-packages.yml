@@ -51,7 +51,7 @@ jobs:
       # Allow Portage's namespace-based sandboxes inside the container; Docker's
       # default AppArmor profile would block the mounts they need.
       options: --cap-add=SYS_ADMIN --security-opt seccomp=unconfined --security-opt apparmor=unconfined
-    timeout-minutes: 330
+    timeout-minutes: 180
     defaults:
       run:
         shell: bash
@@ -89,7 +89,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Prepare package build policy
+      - name: Prepare package build
         run: bash .github/scripts/prepare-ci.sh "$PACKAGE"
       - name: Test updater behavior
         run: bash .github/tests/update-package.sh
@@ -104,7 +104,8 @@ jobs:
 
   report-failure:
     needs: [check, update]
-    if: always() && needs.update.result == 'failure'
+    # A job that hits its time limit ends as cancelled.
+    if: always() && (needs.update.result == 'failure' || needs.update.result == 'cancelled')
     runs-on: ubuntu-latest
     permissions:
       contents: read
