@@ -165,7 +165,7 @@ test_build_arguments() {
 	done
 	# An explicit --binpkg-respect-use would turn --autounmask-use off.
 	assert test "$(grep -c -- '^--binpkg-respect-use' "$fixture/emerge.args")" == 0
-	assert grep -qxF -- --usepkg-exclude=gui-apps/ripdrag::neurogentoo "$fixture/emerge.args"
+	assert grep -qxF -- --usepkg-exclude=gui-apps/ripdrag "$fixture/emerge.args"
 	assert grep -q '^FEATURES=.*network-sandbox' "$fixture/emerge.args"
 	assert grep -qxF 'ripdrag --help' "$fixture/smoke.args"
 }
@@ -189,7 +189,7 @@ test_nchat_build_arguments() {
 	emerge() { printf '%s\n' "$@" >>"$fixture/emerge.args"; }
 	runuser() { :; }
 	cmd_build net-im/nchat 5.19.18
-	assert grep -qxF -- '--usepkg-exclude=net-im/nchat::neurogentoo net-libs/libsignal-ffi::neurogentoo' "$fixture/emerge.args"
+	assert grep -qxF -- '--usepkg-exclude=net-im/nchat net-libs/libsignal-ffi' "$fixture/emerge.args"
 	assert test "$(grep -cFx -- '=net-libs/libsignal-ffi-0.102.2::neurogentoo' "$fixture/emerge.args")" == 1
 }
 

@@ -384,11 +384,12 @@ cmd_build() { # PACKAGE VERSION
 	require_ci "$1"
 	configure_overlay "$1"
 	local -a packages=("=$1-$2::neurogentoo")
-	local excluded="$1::neurogentoo"
+	# --usepkg-exclude takes package names only, without a repository.
+	local excluded="$1"
 	if [[ "$(conf_field "$1" 2)" == nchat ]]; then
 		packages+=("=net-libs/libsignal-ffi-$(ebuild_version \
 			"$(current_ebuild net-libs/libsignal-ffi)" net-libs/libsignal-ffi)::neurogentoo")
-		excluded+=" net-libs/libsignal-ffi::neurogentoo"
+		excluded+=" net-libs/libsignal-ffi"
 	fi
 	# Gentoo's stock profile lacks some USE flags that dependencies of the overlay's
 	# packages need (such as gtk[wayland]); installed systems get them from the
