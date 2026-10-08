@@ -104,8 +104,11 @@ jobs:
 
   report-failure:
     needs: [check, update]
-    # A job that hits its time limit ends as cancelled.
-    if: always() && (needs.update.result == 'failure' || needs.update.result == 'cancelled')
+    # A job that hits its time limit ends as cancelled. A failed check skips the updates,
+    # so it is reported as well.
+    if: >-
+      always() && (needs.check.result == 'failure' || needs.check.result == 'cancelled' ||
+      needs.update.result == 'failure' || needs.update.result == 'cancelled')
     runs-on: ubuntu-latest
     permissions:
       contents: read

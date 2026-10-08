@@ -249,6 +249,25 @@ test_early_failure_report() {
 	assert test "$(wc -l <"$fixture/reports")" == 1
 }
 
+test_check_failure_report() {
+	make_package
+	export GITHUB_SERVER_URL=https://github.com GITHUB_REPOSITORY=example/repo GITHUB_RUN_ID=123 UPDATE_MATRIX=''
+	api() {
+		case "$2" in
+			*/jobs\?*) printf '{"jobs":[{"id":5,"name":"check","conclusion":"failure"}]}\n' ;;
+			*/jobs/5/logs) printf 'controlled version lookup failure\n' ;;
+			*) die "unexpected reporter request: $2" ;;
+		esac
+	}
+	report_issue() {
+		printf '%s\n' "$1" >>"$fixture/reports"
+		assert grep -qx 'controlled version lookup failure' "$UPDATE_LOG"
+	}
+	cmd_report_run_failure
+	assert grep -qx 'Automatic update check failed' "$fixture/reports"
+	assert test "$(wc -l <"$fixture/reports")" == 1
+}
+
 test_system_guard() {
 	expect_failure 'GITHUB_ACTIONS=false bash "$UPDATER" update gui-apps/ripdrag 0.4.13'
 	assert grep -q 'disposable Gentoo Actions container' "$fixture/failure.log"
@@ -268,7 +287,7 @@ fi
 tests=(test_set_var test_command_substitution_failure test_ego_sum test_cargo_members
 	test_nchat_version_location test_gostat_mvs test_ci_keywords test_update_detection
 	test_check_api_failure test_build_arguments test_build_and_smoke_failures test_nchat_build_arguments test_pr_only
-	test_failure_report test_early_failure_report test_system_guard test_unrelated_changes)
+	test_failure_report test_early_failure_report test_check_failure_report test_system_guard test_unrelated_changes)
 for test in "${tests[@]}"; do
 	bash "$test_script" --case "$test"
 	printf 'PASS %s\n' "$test"

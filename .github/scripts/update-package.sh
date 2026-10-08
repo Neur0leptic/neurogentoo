@@ -456,10 +456,12 @@ Workflow run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 }
 
 cmd_report_failure() { # PACKAGE VERSION
-	local title body number
-	title="Automatic update failed: $1 $2"
-	body="The update workflow could not prepare, build or test $1 $2, so the current recipe stays in place.
+	report_issue "Automatic update failed: $1 $2" "The update workflow could not prepare, build or test $1 $2, so the current recipe stays in place.
 Log: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+}
+
+report_issue() { # TITLE BODY: opens the issue, or comments on the open one with this title
+	local title="$1" body="$2" number
 	if [[ -n "${UPDATE_LOG:-}" && -f "$UPDATE_LOG" && -r "$UPDATE_LOG" ]]; then
 		# This log contains only the disposable runner's update/build output. Keep
 		# the issue small; the full transcript remains in the linked workflow run.
@@ -478,28 +480,45 @@ Log: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 	fi
 }
 
+failed_job_id() { # NAME JOBS: ID of job NAME when it failed, timed out or was cancelled
+	jq -r --arg name "$1" '
+		[.jobs[] | select(.name == $name and
+			(.conclusion == "failure" or .conclusion == "timed_out" or
+			 .conclusion == "cancelled"))] |
+		.[0].id // empty' <<<"$2"
+}
+
+job_log() { # ID FILE
+	[[ "$1" =~ ^[0-9]+$ ]] || die "invalid failed Actions job ID"
+	# A separate trusted runner can report even when the Gentoo container never
+	# reached checkout. GitHub's downloaded job logs already mask workflow secrets.
+	if ! api GET "/repos/$GITHUB_REPOSITORY/actions/jobs/$1/logs" >"$2"; then
+		printf 'Job log download failed; use the linked Actions run.\n' >"$2"
+	fi
+}
+
 cmd_report_run_failure() {
 	local jobs entries entry package version id work
 	jobs="$(api GET "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100")"
-	entries="$(jq -c '.[]' <<<"${UPDATE_MATRIX:?UPDATE_MATRIX is required}")"
 	work="$(mktemp -d)"
+	# A failed version check stops the run before any update, so it has no update
+	# matrix; it gets an issue of its own.
+	id="$(failed_job_id check "$jobs")"
+	if [[ -n "$id" ]]; then
+		job_log "$id" "$work/check.log"
+		UPDATE_LOG="$work/check.log" report_issue "Automatic update check failed" \
+			"The update workflow could not look up new package versions, so no recipe was updated.
+Log: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+	fi
+	entries="$(jq -c '.[]' <<<"${UPDATE_MATRIX:-[]}")"
 	while IFS= read -r entry; do
 		[[ -n "$entry" ]] || continue
 		package="$(jq -r '.package' <<<"$entry")"
 		version="$(jq -r '.version' <<<"$entry")"
 		conf_field "$package" 2 >/dev/null
-		id="$(jq -r --arg name "Update $package $version" '
-			[.jobs[] | select(.name == $name and
-				(.conclusion == "failure" or .conclusion == "timed_out" or
-				 .conclusion == "cancelled"))] |
-			.[0].id // empty' <<<"$jobs")"
+		id="$(failed_job_id "Update $package $version" "$jobs")"
 		[[ -n "$id" ]] || continue
-		[[ "$id" =~ ^[0-9]+$ ]] || die "invalid failed Actions job ID"
-		# A separate trusted runner can report even when the Gentoo container never
-		# reached checkout. GitHub's downloaded job logs already mask workflow secrets.
-		if ! api GET "/repos/$GITHUB_REPOSITORY/actions/jobs/$id/logs" >"$work/job.log"; then
-			printf 'Job log download failed; use the linked Actions run.\n' >"$work/job.log"
-		fi
+		job_log "$id" "$work/job.log"
 		UPDATE_LOG="$work/job.log" cmd_report_failure "$package" "$version"
 	done <<<"$entries"
 	rm -rf -- "$work"
