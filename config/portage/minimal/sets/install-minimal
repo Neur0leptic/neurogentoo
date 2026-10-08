@@ -23,5 +23,4 @@ sys-auth/seatd[builtin,server]
 sys-boot/efibootmgr
 sys-fs/dosfstools
 sys-fs/f2fs-tools
-sys-kernel/gentoo-sources
 sys-process/dcron

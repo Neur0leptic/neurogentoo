@@ -1,0 +1,2 @@
+# Boot entries for the distribution kernel: label template, then the command line.
+KERNEL_CONFIG="%entry_id %linux_name Linux %kernel_version ; root=UUID=@ROOT_UUID@ rw"

@@ -1,0 +1,4 @@
+# Gentoo's prebuilt distribution kernel. installkernel copies it with its initramfs
+# to the ESP, and uefi-mkconfig adds the UEFI boot entries (EFI stub).
+sys-kernel/gentoo-kernel-bin[initramfs]
+sys-kernel/installkernel[dracut,efistub]

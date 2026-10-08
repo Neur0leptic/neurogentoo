@@ -1,0 +1,2 @@
+# Custom kernel: sources that the user configures in /usr/src/linux.
+sys-kernel/gentoo-sources

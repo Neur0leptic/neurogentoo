@@ -1,0 +1,6 @@
+# The distribution kernel builds its initramfs with dracut; installkernel's efistub
+# layout installs both to the ESP and calls uefi-mkconfig for the boot entries.
+sys-kernel/gentoo-kernel-bin initramfs
+sys-kernel/installkernel dracut efistub
+# Required by the distribution kernel for its modules.
+sys-apps/kmod lzma
