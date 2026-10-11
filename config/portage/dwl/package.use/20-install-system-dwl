@@ -49,7 +49,6 @@ x11-libs/gdk-pixbuf introspection
 x11-libs/gtk+:3 X introspection wayland
 x11-libs/pango introspection
 x11-misc/rofi drun wayland -X -windowmode
-x11-terms/kitty -X wayland
 # Native Wayland needs dbus; the existing global PGO needs jumbo-build.
 # libpng[apng] / libvpx[postproc] above satisfy its selected system libraries.
 www-client/librewolf dbus jumbo-build wayland

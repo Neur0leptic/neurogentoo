@@ -22,7 +22,6 @@
 /usr/bin/iwctl
 /usr/bin/jq
 /usr/bin/killall
-/usr/bin/kitty
 /usr/bin/librewolf
 /usr/bin/mako
 /usr/bin/notify-send

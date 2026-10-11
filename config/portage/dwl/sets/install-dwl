@@ -55,6 +55,5 @@ sys-process/psmisc[-X]
 x11-libs/libnotify
 x11-misc/rofi[drun,wayland,-X,-windowmode]
 x11-misc/xdg-user-dirs
-x11-terms/kitty[-X,wayland]
 www-client/librewolf[dbus,jumbo-build,wayland]
 www-client/helium-bin
