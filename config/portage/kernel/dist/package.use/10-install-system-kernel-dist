@@ -4,3 +4,5 @@ sys-kernel/gentoo-kernel-bin initramfs
 sys-kernel/installkernel dracut efistub
 # Required by the distribution kernel for its modules.
 sys-apps/kmod lzma
+sys-kernel/linux-firmware dist-kernel
+sys-firmware/intel-microcode dist-kernel

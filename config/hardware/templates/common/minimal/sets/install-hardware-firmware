@@ -1,1 +1,1 @@
-sys-kernel/linux-firmware[@FIRMWARE_USE@,redistributable,-initramfs,-dist-kernel]
+sys-kernel/linux-firmware[@FIRMWARE_USE@,redistributable]

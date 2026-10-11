@@ -1,1 +1,1 @@
-sys-firmware/intel-microcode split-ucode -initramfs -dist-kernel
+sys-firmware/intel-microcode split-ucode
