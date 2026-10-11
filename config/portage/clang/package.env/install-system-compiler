@@ -94,6 +94,7 @@ dev-libs/libgcrypt no_polly
 dev-libs/blake3 no_polly
 gui-wm/mangowc no_polly
 sys-apps/busybox no_polly
+app-admin/chezmoi no_polly
 
 dev-libs/protobuf clang_safe
 net-misc/openssh openssh_no_sandbox

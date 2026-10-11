@@ -1,4 +1,9 @@
+app-accessibility/at-spi2-core introspection
 app-misc/brightnessctl udev
+app-text/xmlto text
+dev-cpp/cairomm:0 X
+dev-cpp/gtkmm:3.0 X
+dev-libs/glib introspection
 # Waybar tray is already used in the DWL tier (also shared by LocalSend later).
 dev-libs/libdbusmenu gtk3
 gui-apps/wf-recorder pipewire
@@ -8,6 +13,7 @@ gui-apps/swaylock-effects pam -gdk-pixbuf -man
 gui-apps/waybar mpris network pipewire tray udev wifi
 gui-libs/wlroots:0.20 drm libinput session
 gui-libs/xdg-desktop-portal-wlr -elogind -systemd
+media-libs/harfbuzz introspection
 # Required by gtk+[X] for GURU's Helium (see x11-libs/gtk+ below).
 media-libs/libepoxy X
 media-libs/libglvnd X
@@ -20,6 +26,7 @@ media-libs/mesa -llvm opengl wayland -X -opencl -vulkan
 media-video/ffmpeg gpl opus x264
 media-video/pipewire bluetooth dbus extra pipewire-alsa sound-server -elogind -system-service -systemd
 media-video/wireplumber -elogind -system-service -systemd
+net-libs/nodejs icu ssl
 net-wireless/iwd client
 # Helium needs libcups; use the existing TLS provider without enabling cupsd.
 net-print/cups openssl
@@ -29,12 +36,18 @@ sys-apps/shadow pam
 sys-apps/xdg-desktop-portal -systemd
 sys-apps/xdg-desktop-portal-gtk wayland -X
 sys-auth/seatd builtin server
+sys-fs/cryptsetup openssl
+sys-fs/lvm2 udev
 sys-fs/udisks daemon introspection -elogind -lvm -smart -systemd
+sys-libs/libblockdev cryptsetup nvme
+sys-libs/ncurses -minimal
 sys-process/psmisc -X
 # GURU's Helium requires GTK's X11 backend (gtk+[X] also needs cairo, libepoxy and
 # libglvnd with X). Helium still runs natively on Wayland; no X server or XWayland.
 x11-libs/cairo X
-x11-libs/gtk+:3 X wayland
+x11-libs/gdk-pixbuf introspection
+x11-libs/gtk+:3 X introspection wayland
+x11-libs/pango introspection
 x11-misc/rofi drun wayland -X -windowmode
 x11-terms/kitty -X wayland
 # Native Wayland needs dbus; the existing global PGO needs jumbo-build.

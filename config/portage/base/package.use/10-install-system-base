@@ -45,7 +45,7 @@ sys-libs/ncurses static-libs
 
 # LLVM
 llvm-runtimes/compiler-rt atomic-builtins
-llvm-runtimes/compiler-rt-sanitizers profile
+llvm-runtimes/compiler-rt-sanitizers profile -orc
 llvm-runtimes/libunwind static-libs
 llvm-runtimes/libcxx static-libs
 llvm-runtimes/libcxxabi static-libs
