@@ -1,1 +1,2 @@
 media-video/mpv egl vaapi
+media-libs/libplacebo opengl

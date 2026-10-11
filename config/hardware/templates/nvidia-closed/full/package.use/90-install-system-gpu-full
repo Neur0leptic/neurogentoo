@@ -1,1 +1,2 @@
 media-video/mpv nvenc vulkan
+media-libs/libplacebo vulkan

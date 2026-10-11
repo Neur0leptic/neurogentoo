@@ -1,5 +1,6 @@
 app-accessibility/at-spi2-core introspection
 app-misc/brightnessctl udev
+app-misc/jq oniguruma
 app-text/xmlto text
 dev-cpp/cairomm:0 X
 dev-cpp/gtkmm:3.0 X

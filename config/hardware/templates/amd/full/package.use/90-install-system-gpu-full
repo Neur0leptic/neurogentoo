@@ -1,1 +1,2 @@
 media-video/mpv vaapi vulkan
+media-libs/libplacebo vulkan

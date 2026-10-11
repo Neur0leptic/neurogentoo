@@ -1,0 +1,28 @@
+From f5e0732c3563aba14a6aa1ec167e47baad78a93a Mon Sep 17 00:00:00 2001
+From: Kjell Ahlstedt <kjellahlstedt@gmail.com>
+Date: Wed, 9 Sep 2026 08:47:03 +0200
+Subject: [PATCH] gio/giomm/meson.build: dummy_header.h depends on all built .h
+ files
+
+not just the used ones. Even the unused ones shall be built before
+the used ones are compiled. Unused ones may be #included in used ones.
+---
+ gio/giomm/meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gio/giomm/meson.build b/gio/giomm/meson.build
+index 07c3c9b7..6a08d39f 100644
+--- a/gio/giomm/meson.build
++++ b/gio/giomm/meson.build
+@@ -293,7 +293,7 @@ if maintainer_mode
+   # all generated .cc files could be recompiled if one generated .h file has
+   # been changed.
+   built_dummy_h_file_target = custom_target('giomm-dummy_header.h',
+-    input: giomm_used_built_h_file_targets,
++    input: giomm_built_h_file_targets,
+     output: 'dummy_header.h',
+     command: [
+       python3, dummy_header_py,
+-- 
+GitLab
+

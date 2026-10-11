@@ -29,6 +29,7 @@ dev-lang/rust no_polly
 # Existing compiler exceptions from Gentoo.md/reference policy.
 # These are configuration, not installation requests.
 media-libs/mesa no_polly
+dev-util/mesa_clc no_polly
 dev-util/maturin no_polly
 dev-libs/glib no_polly
 dev-debug/gdb no_polly

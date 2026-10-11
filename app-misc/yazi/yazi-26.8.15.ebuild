@@ -547,6 +547,12 @@ src_configure() {
 	cargo_src_configure --locked
 }
 
+src_compile() {
+	# The release tarball has no Git history for the commit in yazi's version string.
+	export YAZI_NO_GITCL=1
+	cargo_src_compile
+}
+
 src_install() {
 	cargo_src_install --path yazi-fm
 	cargo_src_install --path yazi-cli
