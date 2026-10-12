@@ -143,7 +143,7 @@ RDEPEND="dev-db/sqlite:3
 	dev-libs/openssl:=
 	media-libs/libpng:=
 	sys-apps/file
-	sys-libs/ncurses:=[unicode]
+	sys-libs/ncurses:=
 	virtual/zlib
 	gui-apps/wl-clipboard"
 DEPEND="${RDEPEND}
