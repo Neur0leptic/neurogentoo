@@ -97,6 +97,8 @@ gui-wm/mangowc no_polly
 sys-apps/busybox no_polly
 app-admin/chezmoi no_polly
 gui-wm/dwl::neurogentoo no_polly
+mail-client/aerc no_polly
 
 dev-libs/protobuf clang_safe
 net-misc/openssh openssh_no_sandbox
+app-arch/ouch rust_libstdcxx
