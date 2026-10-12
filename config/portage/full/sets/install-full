@@ -7,6 +7,7 @@ app-text/zathura-pdf-poppler
 app-office/calcurse
 app-text/poppler
 dev-lang/python
+dev-util/sh
 media-gfx/imv[bmp,gif,jpeg,png,svg,wayland,webp,-X]
 media-video/ffmpeg
 media-video/mpv[cli,lua,lua_single_target_luajit,pipewire,wayland,-X,-alsa,-libmpv]
