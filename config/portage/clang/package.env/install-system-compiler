@@ -98,7 +98,9 @@ sys-apps/busybox no_polly
 app-admin/chezmoi no_polly
 gui-wm/dwl::neurogentoo no_polly
 mail-client/aerc no_polly
+net-im/nchat::neurogentoo no_polly
+net-libs/libsignal-ffi::neurogentoo no_polly
 
 dev-libs/protobuf clang_safe
 net-misc/openssh openssh_no_sandbox
-app-arch/ouch rust_libstdcxx
+app-arch/ouch rust_default_libs
