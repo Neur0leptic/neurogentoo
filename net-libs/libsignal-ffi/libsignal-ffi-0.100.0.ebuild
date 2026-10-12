@@ -612,7 +612,7 @@ LICENSE+=" GPL-3+ Apache-2.0 BSD BSD-2 CDLA-Permissive-2.0 ISC MIT MPL-2.0 opens
 SLOT="0"
 KEYWORDS="~amd64"
 BDEPEND="dev-build/cmake
-	dev-libs/protobuf
+	dev-libs/protobuf[protoc]
 	dev-vcs/git
 	llvm-core/clang
 	virtual/pkgconfig"
