@@ -147,7 +147,7 @@ RDEPEND="dev-db/sqlite:3
 	virtual/zlib
 	gui-apps/wl-clipboard"
 DEPEND="${RDEPEND}
-	=net-libs/libsignal-ffi-${LIBSIGNAL_VERSION}::neurogentoo"
+	=net-libs/libsignal-ffi-${LIBSIGNAL_VERSION}"
 BDEPEND="app-arch/unzip
 	>=dev-lang/go-1.27.1
 	dev-util/gperf
