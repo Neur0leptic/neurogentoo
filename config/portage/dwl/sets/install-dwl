@@ -44,6 +44,7 @@ net-wireless/iwd[client]
 sys-apps/dbus
 sys-apps/eza[-git]
 sys-apps/file
+sys-apps/keyutils
 sys-apps/ripgrep
 sys-apps/shadow[pam]
 sys-apps/xdg-desktop-portal
