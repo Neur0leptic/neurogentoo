@@ -1,4 +1,4 @@
 # Full-tier applications; libsignal-ffi is a build dependency of nchat.
 net-im/nchat::neurogentoo
 www-client/wiki-tui::neurogentoo
-net-misc/croc
+net-misc/sendme::neurogentoo

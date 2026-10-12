@@ -8,3 +8,4 @@ app-text/poppler cairo utils
 app-text/tessdata_fast l10n_de
 app-text/tesseract png
 media-libs/leptonica png zlib
+app-arch/7zip symlink

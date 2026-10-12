@@ -1,3 +1,4 @@
 net-im/nchat::neurogentoo
 net-libs/libsignal-ffi::neurogentoo
 www-client/wiki-tui::neurogentoo
+net-misc/sendme::neurogentoo

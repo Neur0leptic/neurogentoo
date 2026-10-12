@@ -1,4 +1,4 @@
 net-im/nchat::neurogentoo ~amd64
 net-libs/libsignal-ffi::neurogentoo ~amd64
 www-client/wiki-tui::neurogentoo ~amd64
-net-misc/croc ~amd64
+net-misc/sendme::neurogentoo ~amd64

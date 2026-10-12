@@ -1,4 +1,5 @@
 # Full-tier applications; their libraries and build tools are ebuild dependencies.
+app-arch/7zip[symlink]
 app-arch/ouch
 app-text/tessdata_fast[l10n_de]
 app-text/tesseract[png]

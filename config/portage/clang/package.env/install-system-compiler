@@ -100,8 +100,8 @@ gui-wm/dwl::neurogentoo no_polly
 mail-client/aerc no_polly
 net-im/nchat::neurogentoo no_polly
 net-libs/libsignal-ffi::neurogentoo no_polly
-net-misc/croc no_polly
 www-client/wiki-tui::neurogentoo no_polly
+net-misc/sendme::neurogentoo no_polly
 
 dev-libs/protobuf clang_safe
 net-misc/openssh openssh_no_sandbox
