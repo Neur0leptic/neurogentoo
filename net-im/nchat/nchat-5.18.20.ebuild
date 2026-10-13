@@ -163,6 +163,7 @@ src_unpack() {
 
 src_prepare() {
 	cmake_src_prepare
+	eapply "${FILESDIR}/nchat-explicit-cstdlib.patch"
 	# Both Go protocols share one runtime in the internal-static build. Seed the
 	# generated module with the pinned union, rather than discovering versions.
 	cp "${FILESDIR}/gostat-go.mod" lib/gostat/go.mod || die

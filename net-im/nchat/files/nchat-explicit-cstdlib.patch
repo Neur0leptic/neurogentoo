@@ -1,0 +1,43 @@
+Include the standard declarations for abort, getenv and strtol directly instead
+of relying on transitive standard-library headers.
+
+--- a/lib/ncutil/src/apputil.cpp
++++ b/lib/ncutil/src/apputil.cpp
+@@ -7,6 +7,7 @@
+
+ #include "apputil.h"
+
++#include <cstdlib>
+ #include <set>
+
+ #ifdef HAVE_EXECINFO_H
+--- a/lib/ncutil/src/clipboard.cpp
++++ b/lib/ncutil/src/clipboard.cpp
+@@ -11,6 +11,7 @@
+ #include <cmath>
+ #include <cstdint>
+ #include <cstdio>
++#include <cstdlib>
+ #include <stdexcept>
+ #include <vector>
+
+--- a/src/uikeyconfig.cpp
++++ b/src/uikeyconfig.cpp
+@@ -8,6 +8,7 @@
+ #include "uikeyconfig.h"
+
+ #include <algorithm>
++#include <cstdlib>
+
+ #include <ncurses.h>
+
+--- a/src/uimodel.cpp
++++ b/src/uimodel.cpp
+@@ -8,6 +8,7 @@
+ #include "uimodel.h"
+
+ #include <algorithm>
++#include <cstdlib>
+
+ #include <ncurses.h>
+ #include <sys/ioctl.h>
