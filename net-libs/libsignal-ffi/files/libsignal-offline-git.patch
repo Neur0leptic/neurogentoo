@@ -1,0 +1,14 @@
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -95,3 +95,3 @@
+-boring-signal = { git = "https://github.com/signalapp/boring", tag = "signal-v5.0.2", package = "boring", default-features = false }
+-spqr = { git = "https://github.com/signalapp/SparsePostQuantumRatchet.git", tag = "v1.5.3" }
+-tokio-boring-signal = { git = "https://github.com/signalapp/boring", tag = "signal-v5.0.2", package = "tokio-boring" }
++boring-signal = { path = "../boring-2c157897feea0c54f5eca93407a157fa90703b5f/boring", package = "boring", default-features = false }
++spqr = { path = "../SparsePostQuantumRatchet-fd320484dcec89004021e6fdc7481825f5f261fa" }
++tokio-boring-signal = { path = "../boring-2c157897feea0c54f5eca93407a157fa90703b5f/tokio-boring", package = "tokio-boring" }
+@@ -243,2 +243,2 @@
+-boring = { git = 'https://github.com/signalapp/boring', tag = "signal-v5.0.2" }
+-boring-sys = { git = 'https://github.com/signalapp/boring', tag = "signal-v5.0.2" }
++boring = { path = "../boring-2c157897feea0c54f5eca93407a157fa90703b5f/boring" }
++boring-sys = { path = "../boring-2c157897feea0c54f5eca93407a157fa90703b5f/boring-sys" }

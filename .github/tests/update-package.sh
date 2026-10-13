@@ -89,6 +89,61 @@ test_nchat_version_location() {
 	expect_failure 'source "$UPDATER"; repo_root="$FIXTURE/repo"; update_nchat_libsignal "$FIXTURE/recipe" "$FIXTURE/source"'
 }
 
+test_libsignal_offline_patch() {
+	local boring=0123456789012345678901234567890123456789
+	local spqr=abcdef0123456789abcdef0123456789abcdef01
+	mkdir -p "$fixture/libsignal" "$fixture/recipe-dir"
+	printf 'BORING_COMMIT="%s"\nSPQR_COMMIT="%s"\n' "$boring" "$spqr" >"$fixture/recipe-dir/recipe"
+	cat >"$fixture/libsignal/Cargo.toml" <<'EOF'
+[workspace.dependencies]
+boring-signal = { git = "https://github.com/signalapp/boring", tag = "signal-v99.0.1", package = "boring", default-features = false }
+spqr = { git = "https://github.com/signalapp/SparsePostQuantumRatchet.git", tag = "v99.0.1" }
+tokio-boring-signal = { git = "https://github.com/signalapp/boring", tag = "signal-v99.0.1", package = "tokio-boring" }
+boring = { version = "99.0", default-features = false }
+[patch.crates-io]
+boring = { git = 'https://github.com/signalapp/boring', tag = "signal-v99.0.1" }
+boring-sys = { git = 'https://github.com/signalapp/boring', tag = "signal-v99.0.1" }
+EOF
+	cp "$fixture/libsignal/Cargo.toml" "$fixture/manifest.before"
+	regenerate_libsignal_patch "$fixture/recipe-dir/recipe" "$fixture/libsignal"
+	assert cmp "$fixture/libsignal/Cargo.toml" "$fixture/manifest.before"
+	patch --batch --fuzz=0 -d "$fixture/libsignal" -p1 \
+		<"$fixture/recipe-dir/files/libsignal-offline-git.patch"
+	assert cmp "$fixture/libsignal/Cargo.toml" "$fixture/libsignal/Cargo.toml.offline"
+	assert grep -qxF "boring-signal = { path = \"../boring-$boring/boring\", package = \"boring\", default-features = false }" "$fixture/libsignal/Cargo.toml"
+	assert grep -qxF "spqr = { path = \"../SparsePostQuantumRatchet-$spqr\" }" "$fixture/libsignal/Cargo.toml"
+	assert grep -qxF 'boring = { version = "99.0", default-features = false }' "$fixture/libsignal/Cargo.toml"
+	assert test "$(grep -c 'git =' "$fixture/libsignal/Cargo.toml" || true)" == 0
+	cp "$fixture/recipe-dir/files/libsignal-offline-git.patch" "$fixture/patch.before"
+	cp "$fixture/manifest.before" "$fixture/libsignal/Cargo.toml"
+	printf 'BORINGSSL_COMMIT="%s"\n' "$boring" >>"$fixture/recipe-dir/recipe"
+	set_var "$fixture/recipe-dir/recipe" BORING_COMMIT 0000000000000000000000000000000000000000
+	set_var "$fixture/recipe-dir/recipe" SPQR_COMMIT 0000000000000000000000000000000000000000
+	printf '[[package]]\nname = "boring"\nsource = "git+https://github.com/signalapp/boring?tag=new#%s"\n[[package]]\nname = "spqr"\nsource = "git+https://github.com/signalapp/SparsePostQuantumRatchet.git?tag=new#%s"\n' \
+		"$boring" "$spqr" >"$fixture/libsignal/Cargo.lock"
+	bump_ebuild() { printf '%s' "$fixture/recipe-dir/recipe"; }
+	fetch_source() { printf '%s' "$fixture/libsignal"; }
+	regenerate_cargo() { :; }
+	api() { printf '{"sha":"%s"}\n' "$boring"; }
+	refresh_manifest() { :; }
+	check_package() { :; }
+	update_libsignal 99.0.1
+	assert grep -qxF "BORING_COMMIT=\"$boring\"" "$fixture/recipe-dir/recipe"
+	assert grep -qxF "SPQR_COMMIT=\"$spqr\"" "$fixture/recipe-dir/recipe"
+	assert cmp "$fixture/recipe-dir/files/libsignal-offline-git.patch" "$fixture/patch.before"
+	sed -i 's|signalapp/boring|example/boring|g' "$fixture/libsignal/Cargo.toml"
+	expect_failure 'source "$UPDATER"; regenerate_libsignal_patch "$FIXTURE/recipe-dir/recipe" "$FIXTURE/libsignal"'
+	assert cmp "$fixture/recipe-dir/files/libsignal-offline-git.patch" "$fixture/patch.before"
+	cp "$fixture/manifest.before" "$fixture/libsignal/Cargo.toml"
+	sed -i '/^spqr = /d' "$fixture/libsignal/Cargo.toml"
+	expect_failure 'source "$UPDATER"; regenerate_libsignal_patch "$FIXTURE/recipe-dir/recipe" "$FIXTURE/libsignal"'
+	assert cmp "$fixture/recipe-dir/files/libsignal-offline-git.patch" "$fixture/patch.before"
+	cp "$fixture/manifest.before" "$fixture/libsignal/Cargo.toml"
+	printf 'other = { git = "https://github.com/example/other", tag = "v1" }\n' >>"$fixture/libsignal/Cargo.toml"
+	expect_failure 'source "$UPDATER"; regenerate_libsignal_patch "$FIXTURE/recipe-dir/recipe" "$FIXTURE/libsignal"'
+	assert cmp "$fixture/recipe-dir/files/libsignal-offline-git.patch" "$fixture/patch.before"
+}
+
 test_gostat_mvs() {
 	local tree
 	command -v go >/dev/null || die "Go is required for the MVS test"
@@ -285,7 +340,7 @@ if [[ "${1:-}" == --case ]]; then
 fi
 
 tests=(test_set_var test_command_substitution_failure test_ego_sum test_cargo_members
-	test_nchat_version_location test_gostat_mvs test_ci_keywords test_update_detection
+	test_nchat_version_location test_libsignal_offline_patch test_gostat_mvs test_ci_keywords test_update_detection
 	test_check_api_failure test_build_arguments test_build_and_smoke_failures test_nchat_build_arguments test_pr_only
 	test_failure_report test_early_failure_report test_check_failure_report test_system_guard test_unrelated_changes)
 for test in "${tests[@]}"; do

@@ -257,6 +257,40 @@ lock_git_commit() { # CARGO_LOCK CRATE -> commit of the crate's git source
 		/^source = "git\+/ && name == crate { sub(/.*#/, ""); sub(/".*/, ""); print; exit }' "$1"
 }
 
+regenerate_libsignal_patch() { # EBUILD SOURCE_DIR: use the same commits as GIT_CRATES
+	local boring spqr patch
+	boring="$(sed -n 's/^BORING_COMMIT="\([0-9a-f]*\)"$/\1/p' "$1")"
+	spqr="$(sed -n 's/^SPQR_COMMIT="\([0-9a-f]*\)"$/\1/p' "$1")"
+	[[ "$boring" =~ ^[0-9a-f]{40}$ && "$spqr" =~ ^[0-9a-f]{40}$ ]] ||
+		die "invalid libsignal Git commits"
+	awk -v boring="$boring" -v spqr="$spqr" '
+		BEGIN {
+			paths["boring-signal"] = "../boring-" boring "/boring"
+			paths["boring"] = "../boring-" boring "/boring"
+			paths["boring-sys"] = "../boring-" boring "/boring-sys"
+			paths["tokio-boring-signal"] = "../boring-" boring "/tokio-boring"
+			paths["spqr"] = "../SparsePostQuantumRatchet-" spqr
+			for (name in paths)
+				repos[name] = "https://github[.]com/signalapp/" (name == "spqr" ? "SparsePostQuantumRatchet" : "boring")
+		}
+		$0 ~ / = \{ git = / && $1 in paths {
+			name = $1
+			if (++seen[name] != 1 || $0 !~ ("git = [\"\047]" repos[name] "([.]git)?[\"\047], tag = ") ||
+				!sub(/git = ["\047][^"\047]+["\047], tag = ["\047][^"\047]+["\047]/,
+					"path = \"" paths[name] "\"")) bad = 1
+		}
+		/(^|[ {,])git = / { bad = 1 }
+		{ print }
+		END { for (name in paths) if (seen[name] != 1) bad = 1; exit bad }' \
+		"$2/Cargo.toml" >"$2/Cargo.toml.offline" || die "libsignal Git dependency layout changed"
+	patch="${1%/*}/files/libsignal-offline-git.patch"
+	install -d -- "${patch%/*}"
+	diff -U0 --label a/Cargo.toml --label b/Cargo.toml \
+		"$2/Cargo.toml" "$2/Cargo.toml.offline" >"$patch.new" ||
+		[[ $? == 1 ]] || die "cannot generate the libsignal offline patch"
+	mv -- "$patch.new" "$patch"
+}
+
 configure_overlay() { # PACKAGE: register this checkout like the installer does
 	local -a packages=("$1")
 	[[ "$(conf_field "$1" 2)" != nchat ]] || packages+=(net-libs/libsignal-ffi)
@@ -285,6 +319,7 @@ update_libsignal() { # VERSION: the libsignal-ffi release that nchat requires
 	boring="$(lock_git_commit "$source/Cargo.lock" boring)"
 	set_var "$ebuild" BORING_COMMIT "$boring"
 	set_var "$ebuild" SPQR_COMMIT "$(lock_git_commit "$source/Cargo.lock" spqr)"
+	regenerate_libsignal_patch "$ebuild" "$source"
 	# boring-sys builds the BoringSSL revision recorded as its git submodule.
 	set_var "$ebuild" BORINGSSL_COMMIT "$(api GET \
 		"/repos/signalapp/boring/contents/boring-sys/deps/boringssl?ref=$boring" | jq -r '.sha')"

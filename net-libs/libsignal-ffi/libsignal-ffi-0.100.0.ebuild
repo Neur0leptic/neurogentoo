@@ -619,6 +619,9 @@ BDEPEND="dev-build/cmake
 
 src_prepare() {
 	default
+	# Cargo's path patches do not prevent resolving the original tagged Git
+	# sources. Replace the manifest references with the declared archive paths.
+	eapply "${FILESDIR}/libsignal-offline-git.patch"
 	# Populate the Git submodule from a declared distfile before Cargo executes.
 	# boring-sys applies its own checked-in patches to a private build copy.
 	rmdir "${WORKDIR}/boring-${BORING_COMMIT}/boring-sys/deps/boringssl" || die
