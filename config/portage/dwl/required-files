@@ -29,6 +29,7 @@
 /usr/bin/pipewire
 /usr/bin/playerctl
 /usr/bin/python3
+/usr/bin/pw-play
 /usr/bin/rg
 /usr/bin/rofi
 /usr/bin/satty
@@ -50,3 +51,7 @@
 /usr/bin/wpctl
 /usr/bin/zoxide
 /usr/bin/zsh
+/usr/share/icons/catppuccin-mocha-sapphire-cursors/index.theme
+/usr/share/icons/catppuccin-mocha-sapphire-cursors/cursors/left_ptr
+/usr/share/icons/catppuccin-mocha-sapphire-cursors/cursors/hand2
+/usr/share/sounds/freedesktop/stereo/bell.oga

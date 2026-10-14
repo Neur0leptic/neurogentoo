@@ -25,8 +25,9 @@ does not activate its compiler settings or deploy system configuration.
 These templates are opinionated, not universal Gentoo defaults.
 
 The DWL recipe uses the shared desktop patch and IPC protocol from
-[dotfiles](https://github.com/Neur0leptic/dotfiles). Chezmoi manages the runtime
-desktop settings separately.
+[dotfiles](https://github.com/Neur0leptic/dotfiles). The installer seeds the user's
+editable `~/.local/src/dwl/config.h` once; `update_dwl.sh` rebuilds it through native
+savedconfig without publishing local header edits. Chezmoi manages the session scripts.
 
 ## Package updates
 

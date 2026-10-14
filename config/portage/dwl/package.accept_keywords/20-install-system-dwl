@@ -13,3 +13,4 @@ media-sound/wiremix ~amd64
 net-wireless/bluetui ~amd64
 sys-auth/pam_xdg ~amd64
 www-client/helium-bin ~amd64
+x11-themes/catppuccin-cursors ~amd64

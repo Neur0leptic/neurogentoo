@@ -5,4 +5,4 @@ app-misc/timer::neurogentoo
 gui-apps/clipse::neurogentoo
 gui-apps/ripdrag::neurogentoo
 gui-apps/wayland-pipewire-idle-inhibit::neurogentoo
-gui-wm/dwl::neurogentoo
+gui-wm/dwl::neurogentoo[savedconfig]

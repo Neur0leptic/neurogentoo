@@ -40,10 +40,14 @@ src_unpack() {
 
 src_prepare() {
 	eapply "${EGIT_CHECKOUT_DIR}/dot_config/dwl/patches/0001-neuroleptic.patch"
+	cp "${EGIT_CHECKOUT_DIR}/dot_config/dwl/config.def.h" config.def.h || die
+	cp config.def.h config.h || die
 	cp "${EGIT_CHECKOUT_DIR}/dot_config/dwl/protocols/dwl-ipc-unstable-v2.xml" \
 		protocols/dwl-ipc-unstable-v2.xml || die
 	default
 	restore_config config.h
+	grep -qxF '#define DWL_CONFIG_VERSION 1' config.h ||
+		die "Review the native DWL config.h before rebuilding; existing savedconfig was retained"
 }
 
 src_compile() {
@@ -58,6 +62,7 @@ src_install() {
 	# Installed provenance lets resume detect a different config/patch build.
 	insinto /usr/share/dwl/neurogentoo
 	doins config.h
+	newins config.def.h default-config.h
 	newins "${EGIT_CHECKOUT_DIR}/dot_config/dwl/patches/0001-neuroleptic.patch" desktop.patch
 	newins "${EGIT_CHECKOUT_DIR}/dot_config/dwl/protocols/dwl-ipc-unstable-v2.xml" dwl-ipc-unstable-v2.xml
 	printf '%s\n' "${EGIT_VERSION}" > "${T}/dotfiles-revision" || die

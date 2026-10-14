@@ -30,6 +30,7 @@ gui-apps/wlr-randr
 gui-apps/wlsunset
 gui-libs/xdg-desktop-portal-wlr
 media-libs/fontconfig
+media-libs/libsndfile[-minimal]
 # wf-recorder and the selected recorder script require these encoders already.
 media-video/ffmpeg[gpl,opus,x264]
 media-sound/playerctl
@@ -56,5 +57,7 @@ sys-process/psmisc[-X]
 x11-libs/libnotify
 x11-misc/rofi[drun,wayland,-X,-windowmode]
 x11-misc/xdg-user-dirs
+x11-themes/catppuccin-cursors
+x11-themes/sound-theme-freedesktop
 www-client/librewolf[dbus,jumbo-build,wayland]
 www-client/helium-bin

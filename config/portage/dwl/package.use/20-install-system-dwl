@@ -19,6 +19,7 @@ media-libs/harfbuzz introspection
 media-libs/libepoxy X
 media-libs/libglvnd X
 media-libs/libpng apng
+media-libs/libsndfile -minimal
 media-libs/libvpx postproc
 # Hardware drivers (crocus, iris, radeonsi/ACO) do not use LLVM; it only adds the
 # software fallback, and mesa[llvm] would need LLVM's masked AMDGPU target. Only the
