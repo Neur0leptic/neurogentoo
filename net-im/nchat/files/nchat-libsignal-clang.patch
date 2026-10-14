@@ -1,0 +1,19 @@
+Select libsignal's existing Clang cgo aliases when the packager explicitly uses
+Clang on Linux. Keep the original OS-based selection for untagged builds.
+
+--- a/lib/sgchat/go/ext/signal/pkg/libsignalgo/fixedarray_clang.go
++++ b/lib/sgchat/go/ext/signal/pkg/libsignalgo/fixedarray_clang.go
+@@ -1,4 +1,4 @@
+-//go:build darwin || android || ios || (windows && arm64)
++//go:build libsignal_clang || darwin || android || ios || (windows && arm64)
+ 
+ package libsignalgo
+ 
+--- a/lib/sgchat/go/ext/signal/pkg/libsignalgo/fixedarray_gcc.go
++++ b/lib/sgchat/go/ext/signal/pkg/libsignalgo/fixedarray_gcc.go
+@@ -1,4 +1,4 @@
+-//go:build !(darwin || android || ios || (windows && arm64))
++//go:build !libsignal_clang && !(darwin || android || ios || (windows && arm64))
+ 
+ package libsignalgo
+ 

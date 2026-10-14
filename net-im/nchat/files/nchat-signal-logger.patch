@@ -1,0 +1,36 @@
+Backport the logger callback ABI correction from mautrix-signal commit
+68d1d756bcaa0819a9ae9aa9d799b5fd9a34346f (logging.go only).
+The bundled libsignal 0.100.0 header requires status-returning log/flush
+callbacks; zero reports success and prevents recursive callback-error logging.
+
+--- a/lib/sgchat/go/ext/signal/pkg/libsignalgo/logging.go
++++ b/lib/sgchat/go/ext/signal/pkg/libsignalgo/logging.go
+@@ -19,8 +19,8 @@
+ /*
+ #include <./libsignal-ffi.h>
+ 
+-extern void signal_log_callback(void *ctx, SignalLogLevel level, SignalCStringPtr file, uint32_t line, SignalCStringPtr message);
+-extern void signal_log_flush_callback(void *ctx);
++extern int signal_log_callback(void *ctx, SignalLogLevel level, SignalCStringPtr file, uint32_t line, SignalCStringPtr message);
++extern int signal_log_flush_callback(void *ctx);
+ extern void signal_log_destroy_callback(void *ctx);
+ */
+ import "C"
+@@ -32,13 +32,15 @@
+ var ffiLogger Logger
+ 
+ //export signal_log_callback
+-func signal_log_callback(ctx unsafe.Pointer, level C.SignalLogLevel, file C.SignalCStringPtr, line C.uint32_t, message C.SignalCStringPtr) {
++func signal_log_callback(ctx unsafe.Pointer, level C.SignalLogLevel, file C.SignalCStringPtr, line C.uint32_t, message C.SignalCStringPtr) C.int {
+ 	ffiLogger.Log(LogLevel(int(level)), CopyCStringToString(file), uint(line), CopyCStringToString(message))
++	return 0
+ }
+ 
+ //export signal_log_flush_callback
+-func signal_log_flush_callback(ctx unsafe.Pointer) {
++func signal_log_flush_callback(ctx unsafe.Pointer) C.int {
+ 	ffiLogger.Flush()
++	return 0
+ }
+ 
+ //export signal_log_destroy_callback

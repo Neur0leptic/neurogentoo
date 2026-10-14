@@ -5,7 +5,7 @@ EAPI=8
 
 GO_OPTIONAL=1
 CMAKE_BUILD_TYPE=Release
-inherit go-module cmake multilib
+inherit go-module cmake multilib toolchain-funcs
 # BEGIN GENERATED DEPENDENCIES
 EGO_SUM=(
 	"filippo.io/edwards25519 v1.2.0"
@@ -164,6 +164,8 @@ src_unpack() {
 src_prepare() {
 	cmake_src_prepare
 	eapply "${FILESDIR}/nchat-explicit-cstdlib.patch"
+	eapply "${FILESDIR}/nchat-libsignal-clang.patch"
+	eapply "${FILESDIR}/nchat-signal-logger.patch"
 	# Both Go protocols share one runtime in the internal-static build. Seed the
 	# generated module with the pinned union, rather than discovering versions.
 	cp "${FILESDIR}/gostat-go.mod" lib/gostat/go.mod || die
@@ -187,8 +189,16 @@ src_prepare() {
 src_configure() {
 	go-module_src_configure
 	export GOTOOLCHAIN=local GOFLAGS='-buildvcs=false -mod=readonly'
+	# Linux otherwise selects GCC cgo aliases even when CC is Clang.
+	if tc-is-clang; then
+		GOFLAGS+=' -tags=libsignal_clang'
+	fi
 	local mycmakeargs=(
 		-DBUILD_TESTING=OFF
+		# Keep bundled clip internal; external system libraries stay shared.
+		-DBUILD_SHARED_LIBS=OFF
+		# dobin does not perform CMake's install-time RPATH rewrite.
+		-DCMAKE_SKIP_RPATH=ON
 		-DDOWNLOAD_LIBSIGNAL=OFF
 		-DNEUROGENTOO_LIBSIGNAL_FFI="${ESYSROOT}/usr/$(get_libdir)/libsignal-ffi/${LIBSIGNAL_VERSION}/libsignal_ffi.a"
 		-DHAS_DUMMY=OFF
