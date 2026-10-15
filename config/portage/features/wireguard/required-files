@@ -1,2 +1,3 @@
 /usr/sbin/nft
 /usr/bin/wg
+/usr/bin/wg-quick

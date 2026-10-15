@@ -55,3 +55,6 @@
 /usr/share/icons/catppuccin-mocha-sapphire-cursors/cursors/left_ptr
 /usr/share/icons/catppuccin-mocha-sapphire-cursors/cursors/hand2
 /usr/share/sounds/freedesktop/stereo/bell.oga
+/usr/bin/bat
+/usr/bin/bluetoothctl
+/usr/bin/hostname

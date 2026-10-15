@@ -54,3 +54,7 @@ x11-misc/rofi drun wayland -X -windowmode
 # Native Wayland needs dbus; the existing global PGO needs jumbo-build.
 # libpng[apng] / libvpx[postproc] above satisfy its selected system libraries.
 www-client/librewolf dbus jumbo-build wayland
+gui-apps/mako icons
+net-wireless/bluez readline
+sys-apps/coreutils hostname
+x11-themes/catppuccin-cursors mocha

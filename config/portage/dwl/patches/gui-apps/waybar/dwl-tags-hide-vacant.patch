@@ -1,0 +1,40 @@
+diff --git a/man/waybar-dwl-tags.5.scd b/man/waybar-dwl-tags.5.scd
+index 39d15b7..c331f1f 100644
+--- a/man/waybar-dwl-tags.5.scd
++++ b/man/waybar-dwl-tags.5.scd
+@@ -26,6 +26,11 @@ Addressed by *dwl/tags*
+ 	default: false ++
+ 	If set to false, you can left-click to set focused tag. Right-click to toggle tag focus. If set to true this behaviour is disabled.
+ 
++*hide-vacant*: ++
++	typeof: bool ++
++	default: false ++
++	Only show relevant tags: tags that are either focused or have a window on them.
++
+ *expand*: ++
+ 	typeof: bool ++
+ 	default: false ++
+diff --git a/src/modules/dwl/tags.cpp b/src/modules/dwl/tags.cpp
+index fb06565..a8703e8 100644
+--- a/src/modules/dwl/tags.cpp
++++ b/src/modules/dwl/tags.cpp
+@@ -143,6 +143,8 @@ Tags::Tags(const std::string& id, const waybar::Bar& bar, const Json::Value& con
+       button.signal_button_press_event().connect(
+           sigc::bind(sigc::mem_fun(*this, &Tags::handle_button_press), i));
+     }
++    // The bar's show_all() must not reveal tags that hide-vacant has hidden.
++    button.set_no_show_all(config_["hide-vacant"].asBool());
+     button.show();
+     i <<= 1;
+   }
+@@ -204,6 +206,10 @@ void Tags::handle_view_tags(uint32_t tag, uint32_t state, uint32_t clients, uint
+   } else {
+     button.get_style_context()->remove_class("urgent");
+   }
++
++  if (config_["hide-vacant"].asBool()) {
++    button.set_visible(clients != 0 || (state & (TAG_ACTIVE | TAG_URGENT)) != 0);
++  }
+ }
+ 
+ } /* namespace waybar::modules::dwl */

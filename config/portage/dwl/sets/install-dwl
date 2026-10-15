@@ -12,7 +12,6 @@ app-shells/dash
 app-shells/fzf
 app-shells/zoxide
 app-shells/zsh
-dev-lang/python
 dev-vcs/git
 gnome-base/dconf
 gui-apps/foot
@@ -42,6 +41,7 @@ net-misc/openssh
 net-wireless/bluez
 net-wireless/bluetui
 net-wireless/iwd[client]
+sys-apps/bat
 sys-apps/dbus
 sys-apps/eza[-git]
 sys-apps/file
