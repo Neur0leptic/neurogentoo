@@ -1,1 +1,2 @@
 udhcpc default
+busybox-ntpd default

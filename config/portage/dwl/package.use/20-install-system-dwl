@@ -56,5 +56,4 @@ x11-misc/rofi drun wayland -X -windowmode
 www-client/librewolf dbus jumbo-build wayland
 gui-apps/mako icons
 net-wireless/bluez readline
-sys-apps/coreutils hostname
 x11-themes/catppuccin-cursors mocha

@@ -74,3 +74,4 @@ app-crypt/gnupg ssl
 net-wireless/iwd client
 dev-cpp/eigen sparsehash
 net-vpn/wireguard-tools wg-quick
+sys-apps/coreutils hostname
