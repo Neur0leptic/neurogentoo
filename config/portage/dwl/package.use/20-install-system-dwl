@@ -4,6 +4,7 @@ app-misc/jq oniguruma
 app-text/xmlto text
 dev-cpp/cairomm:0 X
 dev-cpp/gtkmm:3.0 X
+dev-cpp/simdutf atomic-base64
 dev-libs/glib introspection
 dev-libs/libdbusmenu gtk3
 dev-util/mesa_clc llvm_slot_22 -llvm_slot_23
