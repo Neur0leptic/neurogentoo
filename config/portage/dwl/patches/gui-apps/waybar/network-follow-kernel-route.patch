@@ -1,0 +1,45 @@
+diff --git a/src/modules/network.cpp b/src/modules/network.cpp
+index c33e750..76710a8 100644
+--- a/src/modules/network.cpp
++++ b/src/modules/network.cpp
+@@ -499,6 +499,28 @@ int waybar::modules::Network::handleEvents(struct nl_msg* msg, void* data) {
+         return NL_SKIP;
+       }
+ 
++      // Without "interface", follow the default route the kernel uses. When a link loses or
++      // regains its carrier, the kernel stops or resumes using its routes
++      // (ignore_routes_with_linkdown) without a route message, so look at the routes again.
++      // Only kernel notifications (sequence 0) count; replies to our own requests do not.
++      if (!is_del_event && nh->nlmsg_seq == 0 && attrs[IFLA_CARRIER] != nullptr &&
++          !net->config_["interface"].isString()) {
++        bool has_carrier = nla_get_u8(attrs[IFLA_CARRIER]) == 1;
++        if (ifi->ifi_index == net->ifid_ && !has_carrier) {
++          spdlog::debug("network: if{} lost its carrier", net->ifid_);
++          net->clearIface();
++          net->dp.emit();
++          net->want_route_dump_ = true;
++          net->askForStateDump();
++          return NL_OK;
++        }
++        if (ifi->ifi_index != net->ifid_ && has_carrier) {
++          // A route over this link may be the preferred one again.
++          net->want_route_dump_ = true;
++          net->askForStateDump();
++        }
++      }
++
+       if (net->ifid_ != -1 && ifi->ifi_index != net->ifid_) {
+         return NL_OK;
+       }
+@@ -750,7 +772,10 @@ int waybar::modules::Network::handleEvents(struct nl_msg* msg, void* data) {
+         higher priority. Disable router -> RTA_GATEWAY -> up new router -> set higher priority added
+         checking route id
+         **/
+-        if (!is_del_event && ((net->ifid_ == -1) || (priority < net->route_priority))) {
++        // The kernel does not use a dead route: its link has no carrier and
++        // ignore_routes_with_linkdown is set.
++        bool is_dead = (rtm->rtm_flags & RTNH_F_DEAD) != 0;
++        if (!is_del_event && !is_dead && ((net->ifid_ == -1) || (priority < net->route_priority))) {
+           // Clear if's state for the case were there is a higher priority
+           // route on a different interface.
+           net->clearIface();
