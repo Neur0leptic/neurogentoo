@@ -2,15 +2,17 @@
 set -u
 
 # DHCP for wired interfaces; iwd configures wireless ones itself (/etc/iwd/main.conf).
-# udhcpc -b asks for a lease in the foreground (3 tries, 3 seconds apart), then keeps
-# trying in the background with 20 seconds between rounds; after a lease it renews it
-# in the background. This script returns once every client is in the background, so
-# net waits for the cable's lease, at most about 9 seconds.
+# udhcpc -b asks for a lease in the foreground (9 tries, 1 second apart: a cable still
+# negotiating its link, which takes a few seconds, loses only the tries sent before it,
+# and a router may take a few seconds more to offer an address), then keeps trying in
+# the background with 20 seconds between rounds; after a lease it renews it in the
+# background. This script returns once every client is in the background, so net
+# waits for the cable's lease, at most about 9 seconds.
 found=""
 for path in /sys/class/net/en* /sys/class/net/eth*; do
     [ -e "$path/device" ] || continue
     interface=${path##*/}
-    /bin/busybox udhcpc -b -R -i "$interface" -p "/run/udhcpc-$interface.pid" \
+    /bin/busybox udhcpc -b -R -t 9 -T 1 -i "$interface" -p "/run/udhcpc-$interface.pid" \
         -s /etc/udhcpc/default.script &
     found=1
 done
