@@ -5,35 +5,26 @@ app-text/xmlto text
 dev-cpp/cairomm:0 X
 dev-cpp/gtkmm:3.0 X
 dev-libs/glib introspection
-# Waybar tray is already used in the DWL tier (also shared by LocalSend later).
 dev-libs/libdbusmenu gtk3
 gui-apps/wf-recorder pipewire
 gui-apps/swaylock-effects pam -gdk-pixbuf -man
-# Backlight display uses udev; scrolling uses brightnessctl, not login-proxy.
-# DWL modules are unconditional in Waybar 0.15; wifi provides rfkill status.
 gui-apps/waybar mpris network pipewire tray udev wifi
 gui-libs/wlroots:0.20 drm libinput session
 gui-libs/xdg-desktop-portal-wlr -elogind -systemd
 media-libs/harfbuzz introspection
-# Required by gtk+[X] for GURU's Helium (see x11-libs/gtk+ below).
 media-libs/libepoxy X
 media-libs/libglvnd X
 media-libs/libpng apng
 media-libs/libsndfile -minimal
 media-libs/libvpx postproc
-# Hardware drivers (crocus, iris, radeonsi/ACO) do not use LLVM; it only adds the
-# software fallback, and mesa[llvm] would need LLVM's masked AMDGPU target. Only the
-# old-Radeon hardware template enables it, because r300/radeon cannot build without.
 media-libs/mesa -llvm opengl wayland -X -opencl -vulkan
 media-video/ffmpeg gpl opus x264
 media-video/pipewire bluetooth dbus extra pipewire-alsa sound-server -elogind -system-service -systemd
 media-video/wireplumber -elogind -system-service -systemd
 net-libs/nodejs icu ssl
 net-wireless/iwd client
-# Helium needs libcups; use the existing TLS provider without enabling cupsd.
 net-print/cups openssl
 sys-apps/eza -git
-# login must run the PAM session: pam_xdg creates XDG_RUNTIME_DIR for Wayland.
 sys-apps/shadow pam
 sys-apps/xdg-desktop-portal -systemd
 sys-apps/xdg-desktop-portal-gtk wayland -X
@@ -44,15 +35,11 @@ sys-fs/udisks daemon introspection -elogind -lvm -smart -systemd
 sys-libs/libblockdev cryptsetup nvme
 sys-libs/ncurses -minimal
 sys-process/psmisc -X
-# GURU's Helium requires GTK's X11 backend (gtk+[X] also needs cairo, libepoxy and
-# libglvnd with X). Helium still runs natively on Wayland; no X server or XWayland.
 x11-libs/cairo X
 x11-libs/gdk-pixbuf introspection
 x11-libs/gtk+:3 X introspection wayland
 x11-libs/pango introspection
 x11-misc/rofi drun wayland -X -windowmode
-# Native Wayland needs dbus; the existing global PGO needs jumbo-build.
-# libpng[apng] / libvpx[postproc] above satisfy its selected system libraries.
 www-client/librewolf dbus jumbo-build wayland
 gui-apps/mako icons
 net-wireless/bluez readline

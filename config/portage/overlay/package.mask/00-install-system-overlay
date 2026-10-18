@@ -1,4 +1,1 @@
-# A fork is a recipe source, not approval to replace packages with its old/live
-# ebuilds. Installer stages unmask only the packages they select (any version, so
-# synced recipe updates reach installed systems).
 */*::neurogentoo

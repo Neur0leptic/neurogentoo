@@ -3,7 +3,6 @@ sys-libs/glibc gcc_o3_lto
 sys-devel/binutils gcc_o3_lto
 sys-libs/binutils-libs gcc_o3_lto
 
-# LLVM does not like Polly
 llvm-core/llvm-common no_polly
 dev-libs/jsoncpp no_polly
 dev-build/cmake no_polly
@@ -26,8 +25,6 @@ sys-devel/mold no_polly
 app-arch/zstd no_polly
 dev-lang/rust no_polly
 
-# Existing compiler exceptions from Gentoo.md/reference policy.
-# These are configuration, not installation requests.
 media-libs/mesa no_polly
 dev-util/mesa_clc no_polly
 dev-util/maturin no_polly
@@ -87,9 +84,6 @@ gui-libs/hyprutils no_polly
 gui-libs/hyprcursor no_polly
 dev-libs/hyprgraphics no_polly
 media-video/handbrake no_polly
-# The historical reference names no_polly_perf, but defines no such env file.
-# perf is not selected by any installer set; keep that unresolved entry inactive.
-# dev-util/perf no_polly_perf
 dev-debug/gdb gcc_o3_lto
 dev-libs/libgcrypt no_polly
 dev-libs/blake3 no_polly

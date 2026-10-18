@@ -1,3 +1,2 @@
-# Required by the selected LocalSend binary's GTK3/Ayatana tray plugin.
 x11-libs/gtk+:3 introspection
 sys-devel/gcc cxx
