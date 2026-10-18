@@ -1,14 +1,33 @@
 #!/sbin/openrc-run
 
-description="BusyBox DHCP client for physical network interfaces"
-command="/usr/local/sbin/udhcpc-all"
-command_background="yes"
-pidfile="/run/udhcpc-all.pid"
-output_log="/var/log/udhcpc.log"
-error_log="/var/log/udhcpc.log"
+description="BusyBox DHCP client for wired network interfaces"
 
 depend() {
     need localmount
     use logger
     provide net
+}
+
+start() {
+    ebegin "Starting DHCP on wired interfaces"
+    # An unplugged cable keeps its routes; with these settings the kernel skips them, so
+    # traffic and the VPN move to WiFi at once.
+    { echo 1 >/proc/sys/net/ipv4/conf/all/ignore_routes_with_linkdown &&
+        echo 1 >/proc/sys/net/ipv6/conf/all/ignore_routes_with_linkdown &&
+        echo 1 >/proc/sys/net/ipv6/conf/default/ignore_routes_with_linkdown; } 2>/dev/null ||
+        ewarn "The kernel keeps using the routes of unplugged links"
+    # In the foreground, so net waits for the cable's lease.
+    /usr/local/sbin/udhcpc-all >>/var/log/udhcpc.log 2>&1
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping DHCP on wired interfaces"
+    for pidfile in /run/udhcpc-*.pid; do
+        [ -f "$pidfile" ] || continue
+        # udhcpc releases its lease on TERM (-R).
+        start-stop-daemon --stop --quiet --pidfile "$pidfile" --retry TERM/5
+        rm -f "$pidfile"
+    done
+    eend 0
 }

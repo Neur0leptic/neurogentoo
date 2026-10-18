@@ -1,31 +1,18 @@
 #!/bin/sh
-set -eu
+set -u
 
-pids=""
-cleanup() {
-    trap - 0 1 2 15
-    for pid in $pids; do
-        kill "$pid" 2>/dev/null || true
-    done
-    wait 2>/dev/null || true
-}
-trap cleanup 0 1 2 15
-
-for path in /sys/class/net/*; do
-    interface=${path##*/}
-    [ "$interface" != lo ] || continue
+# DHCP for wired interfaces; iwd configures wireless ones itself (/etc/iwd/main.conf).
+# udhcpc -b asks for a lease in the foreground (3 tries, 3 seconds apart), then keeps
+# trying in the background with 20 seconds between rounds; after a lease it renews it
+# in the background. This script returns once every client is in the background, so
+# net waits for the cable's lease, at most about 9 seconds.
+found=""
+for path in /sys/class/net/en* /sys/class/net/eth*; do
     [ -e "$path/device" ] || continue
-    case "$interface" in
-        en*|eth*|wl*) ;;
-        *) continue ;;
-    esac
-    /bin/busybox udhcpc -f -R -t 0 -i "$interface" \
-        -p "/run/udhcpc-$interface.pid" -s /etc/udhcpc/default.script &
-    pids="$pids $!"
+    interface=${path##*/}
+    /bin/busybox udhcpc -b -R -i "$interface" -p "/run/udhcpc-$interface.pid" \
+        -s /etc/udhcpc/default.script &
+    found=1
 done
-
-[ -n "$pids" ] || {
-    printf 'udhcpc-all: no supported network interface found\n' >&2
-    exit 1
-}
 wait
+[ -n "$found" ] || printf 'udhcpc-all: no wired interface found\n' >&2

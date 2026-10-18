@@ -44,10 +44,8 @@ case "${1:-}" in
         fi
         ip link set "$interface" up
         ip route del default dev "$interface" 2>/dev/null || true
-        metric=100
-        case "$interface" in wl*) metric=200 ;; esac
         for router_address in ${router:-}; do
-            ip route add default via "$router_address" dev "$interface" metric "$metric"
+            ip route add default via "$router_address" dev "$interface" metric 100
             break
         done
         ;;
