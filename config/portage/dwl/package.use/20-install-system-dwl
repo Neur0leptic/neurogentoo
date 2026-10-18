@@ -6,6 +6,7 @@ dev-cpp/cairomm:0 X
 dev-cpp/gtkmm:3.0 X
 dev-libs/glib introspection
 dev-libs/libdbusmenu gtk3
+dev-util/mesa_clc llvm_slot_22 -llvm_slot_23
 gui-apps/wf-recorder pipewire
 gui-apps/swaylock-effects pam -gdk-pixbuf -man
 gui-apps/waybar mpris network pipewire tray udev wifi
@@ -17,7 +18,7 @@ media-libs/libglvnd X
 media-libs/libpng apng
 media-libs/libsndfile -minimal
 media-libs/libvpx postproc
-media-libs/mesa -llvm opengl wayland -X -opencl -vulkan
+media-libs/mesa -llvm opengl wayland -X -opencl -vulkan llvm_slot_22 -llvm_slot_23
 media-video/ffmpeg gpl opus x264
 media-video/pipewire bluetooth dbus extra pipewire-alsa sound-server -elogind -system-service -systemd
 media-video/wireplumber -elogind -system-service -systemd

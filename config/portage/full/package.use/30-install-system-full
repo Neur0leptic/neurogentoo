@@ -8,4 +8,5 @@ app-text/tessdata_fast l10n_de
 app-text/tesseract png
 media-libs/leptonica png zlib
 app-arch/7zip symlink
+app-arch/ouch llvm_slot_22 -llvm_slot_23
 app-arch/xz-utils extra-filters
