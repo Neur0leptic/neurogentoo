@@ -1,0 +1,13 @@
+// Without elogind polkit sees no active session, so udisks would ask for the
+// root password. Give the desktop user what an active local session gets.
+polkit.addRule(function(action, subject) {
+	var actions = [
+		"org.freedesktop.udisks2.filesystem-mount",
+		"org.freedesktop.udisks2.encrypted-unlock",
+		"org.freedesktop.udisks2.eject-media",
+		"org.freedesktop.udisks2.power-off-drive"
+	];
+	if (subject.user == "@USERNAME@" && actions.indexOf(action.id) >= 0) {
+		return polkit.Result.YES;
+	}
+});
