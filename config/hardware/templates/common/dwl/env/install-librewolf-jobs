@@ -1,0 +1,2 @@
+# LibreWolf builds many large Rust crates at once, so it keeps the memory-based job count even when make.conf allows more.
+MAKEOPTS="-j@BUILD_JOBS@ -l@BUILD_LOAD@"
