@@ -2,7 +2,8 @@ media-gfx/imv bmp gif jpeg png svg wayland webp -X
 app-alternatives/ninja -reference samurai
 net-misc/aria2 ssl -adns -bittorrent -gnutls -libuv -libxml2 -metalink -nettle -nls -scripts -sqlite -ssh -tcmalloc -xmlrpc
 media-libs/libass fontconfig
-media-video/mpv cli lua lua_single_target_luajit pipewire wayland -X -alsa -libmpv
+media-video/ffmpeg gnutls
+media-video/mpv cli drm lua lua_single_target_luajit pipewire wayland -X -alsa -libmpv
 app-text/poppler cairo utils
 app-text/tessdata_fast l10n_de
 app-text/tesseract png

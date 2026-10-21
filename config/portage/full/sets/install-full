@@ -9,8 +9,8 @@ app-office/calcurse
 app-text/poppler
 dev-util/sh
 media-gfx/imv[bmp,gif,jpeg,png,svg,wayland,webp,-X]
-media-video/ffmpeg
-media-video/mpv[cli,lua,lua_single_target_luajit,pipewire,wayland,-X,-alsa,-libmpv]
+media-video/ffmpeg[gnutls]
+media-video/mpv[cli,drm,lua,lua_single_target_luajit,pipewire,wayland,-X,-alsa,-libmpv]
 net-misc/aria2[ssl,-adns,-bittorrent,-gnutls,-libuv,-libxml2,-metalink,-nettle,-nls,-scripts,-sqlite,-ssh,-tcmalloc,-xmlrpc]
 net-misc/yt-dlp
 sys-process/btop
