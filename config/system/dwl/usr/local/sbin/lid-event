@@ -1,0 +1,41 @@
+#!/bin/sh
+# Run by acpid on lid events, e.g. "button/lid LID close". Closing the lid locks the dwl
+# session, then suspends to RAM. While emerge runs it only locks and turns the screen off,
+# like the idle suspend in swayidle's config.
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
+state=${3:-}
+exec 9>/run/lid.lock
+flock -n 9 || exit 0
+
+# The session's environment comes from dwl-autostart, which lives as long as the session.
+# Commands run without the lock's descriptor, so a daemonized swaylock cannot hold it.
+session=$(pgrep -o -x dwl-autostart)
+user=${session:+$(stat -c %U "/proc/$session")}
+as_user() {
+	[ -n "$session" ] || return 1
+	runuser -u "$user" -- env -i HOME="$(getent passwd "$user" | cut -d: -f6)" \
+		PATH=/usr/local/bin:/usr/bin:/bin \
+		$(tr '\0' '\n' < "/proc/$session/environ" | grep -E '^(WAYLAND_DISPLAY|XDG_RUNTIME_DIR)=') \
+		"$@" 9>&-
+}
+locked() { [ -n "$session" ] && pgrep -u "$user" -x swaylock >/dev/null; }
+
+case $state in
+	open)
+		as_user wlopm --on '*'
+		;;
+	close)
+		# Never suspend an unlocked session; swaylock -f returns once the lock holds.
+		if [ -n "$session" ]; then
+			locked || as_user swaylock -f || exit 1
+		fi
+		if pgrep -x emerge >/dev/null; then
+			as_user wlopm --off '*'
+			exit 0
+		fi
+		echo mem > /sys/power/state
+		# The write returns after resume; replace a lock that died during sleep.
+		[ -z "$session" ] || locked || as_user swaylock -f
+		;;
+esac

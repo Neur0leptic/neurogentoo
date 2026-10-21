@@ -1,0 +1,3 @@
+# The lid switch; /usr/local/sbin/lid-event decides what each state change does.
+event=button/lid.*
+action=/usr/local/sbin/lid-event %e

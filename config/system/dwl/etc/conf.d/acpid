@@ -1,0 +1,2 @@
+# Only the lid rule: the package's catch-all rule would run default.sh on every event.
+ACPID_ARGS="--confdir /etc/acpi/lid.d"

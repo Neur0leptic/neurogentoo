@@ -53,6 +53,7 @@ sys-apps/xdg-desktop-portal-gtk
 sys-auth/pam_xdg
 sys-auth/seatd[builtin,server]
 sys-fs/udisks[daemon,introspection,-elogind,-lvm,-smart,-systemd]
+sys-power/acpid
 sys-process/psmisc[-X]
 x11-libs/libnotify
 x11-misc/rofi[drun,wayland,-X,-windowmode]
