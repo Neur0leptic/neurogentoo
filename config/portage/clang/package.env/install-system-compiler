@@ -98,6 +98,5 @@ www-client/wiki-tui::neurogentoo no_polly
 net-misc/sendme::neurogentoo no_polly
 
 dev-libs/protobuf clang_safe
-net-misc/openssh openssh_no_sandbox
 app-arch/ouch rust_default_libs
 media-sound/mpg123-base no_polly
