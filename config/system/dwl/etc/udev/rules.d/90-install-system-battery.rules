@@ -1,0 +1,2 @@
+# Battery and charger events run the battery handler, which also arms the battery's alarm for the next threshold.
+SUBSYSTEM=="power_supply", ACTION=="add|change", ENV{POWER_SUPPLY_TYPE}=="Battery|Mains", ENV{POWER_SUPPLY_SCOPE}!="Device", RUN+="/usr/local/sbin/battery-event"

@@ -1,0 +1,67 @@
+#!/bin/sh
+# Run by udev on battery and charger events. While discharging it notifies the dwl session
+# at 50, 20, 10 and 8 % (in red from 20 %) and powers off at 7 %: a worn battery can cut out
+# near 5 %, as the author's X220 did. Every run sets the battery's ACPI alarm to the next
+# threshold, so the battery itself raises the event when it gets there; nothing polls.
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+STATE=/run/battery-event
+WARN=8
+OFF=7
+LEVELS="50 20 10 $WARN $OFF"
+
+# The system battery; batteries of devices such as a wireless mouse have scope Device.
+for B in /sys/class/power_supply/*; do
+	[ "$(cat "$B/type" 2>/dev/null)" = Battery ] && [ "$(cat "$B/scope" 2>/dev/null)" != Device ] && break
+	B=
+done
+[ -n "$B" ] && [ -r "$B/capacity" ] || exit 0
+read -r status < "$B/status"
+read -r cap < "$B/capacity"
+read -r full < "$B/energy_full"
+
+next=0
+for t in $LEVELS; do
+	[ "$t" -lt "$cap" ] && { next=$t; break; }
+done
+[ -w "$B/alarm" ] && echo $((full / 100 * next)) > "$B/alarm"
+
+if [ "$status" != Discharging ]; then
+	rm -f "$STATE"
+	exit 0
+fi
+
+# Notify each threshold once per discharge, even when an event skips a percent.
+reached=101
+for t in $LEVELS; do
+	[ "$cap" -le "$t" ] && reached=$t
+done
+if [ -r "$STATE" ]; then
+	read -r last < "$STATE"
+	[ "$reached" -lt "$last" ] || exit 0
+	echo "$reached" > "$STATE"
+else
+	# The discharge starts here: warn only if it already starts in the red range.
+	echo "$reached" > "$STATE"
+	[ "$reached" -le 20 ] || exit 0
+fi
+
+# A few lines per discharge record where the thresholds really fall.
+echo "$(date '+%F %T') $cap% energy=$(cat "$B/energy_now") voltage=$(cat "$B/voltage_now")" >> /var/log/battery-event.log
+
+notify() {
+	session=$(pgrep -o -x dwl-autostart) || return 0
+	bus=$(tr '\0' '\n' < "/proc/$session/environ" | grep '^DBUS_SESSION_BUS_ADDRESS=')
+	[ -n "$bus" ] || return 0
+	runuser -u "$(stat -c %U "/proc/$session")" -- env "$bus" timeout 5 notify-send -a Battery "$@"
+}
+
+if [ "$reached" -le "$OFF" ]; then
+	notify -u critical "Battery $cap%" "Powering off now."
+	openrc-shutdown -p now
+elif [ "$reached" -le "$WARN" ]; then
+	notify -u critical "Battery $cap%" "Plug in the charger; the laptop powers off at $OFF%."
+elif [ "$reached" -le 20 ]; then
+	notify -u critical "Battery $cap%"
+else
+	notify -u normal "Battery $cap%"
+fi
