@@ -279,13 +279,48 @@ test_pr_only() {
 	git() { printf '%s\n' "$*" >>"$fixture/git.calls"; }
 	api() {
 		printf '%s %s\n' "$1" "$2" >>"$fixture/api.calls"
-		[[ "$1" == POST && "$2" == /repos/example/repo/pulls ]] || die "unexpected API write"
-		printf '{"number":42}\n'
+		case "$1 $2" in
+			"POST /repos/example/repo/pulls") printf '{"number":42}\n' ;;
+			GET\ *) printf '[]\n' ;;
+			*) die "unexpected API write" ;;
+		esac
 	}
 	cmd_publish gui-apps/ripdrag 0.4.13
-	assert test "$(wc -l <"$fixture/api.calls")" == 1
+	# With nothing superseded, opening the pull request is the only write.
+	assert test "$(grep -vc '^GET ' "$fixture/api.calls")" == 1
 	assert grep -q 'add -A -- gui-apps/ripdrag$' "$fixture/git.calls"
 	assert grep -q 'push -q --force origin update/gui-apps-ripdrag-0.4.13$' "$fixture/git.calls"
+}
+
+test_superseded_items() {
+	export GITHUB_REPOSITORY=example/repo
+	api() {
+		printf '%s %s\n' "$1" "$2" >>"$fixture/api.calls"
+		case "$1 $2" in
+			"GET /repos/example/repo/pulls?state=open&per_page=100")
+				printf '%s\n' '[{"number":7,"head":{"ref":"update/net-misc-sendme-0.37.0"}},
+					{"number":8,"head":{"ref":"update/net-misc-sendme-0.37.1"}},
+					{"number":9,"head":{"ref":"update/net-misc-sendme-bin-1.0"}}]' ;;
+			"GET /repos/example/repo/issues?state=open&per_page=100")
+				printf '%s\n' '[{"number":5,"title":"Automatic update failed: net-misc/sendme 0.37.1"},
+					{"number":6,"title":"Automatic update failed: net-misc/sendme 0.37.0"},
+					{"number":10,"title":"Automatic update failed: net-misc/sendme-bin 1.0"},
+					{"number":11,"title":"Automatic update failed: net-misc/sendme 0.36.0","pull_request":{}}]' ;;
+			POST\ */comments | PATCH\ *) ;;
+			*) die "unexpected request: $1 $2" ;;
+		esac
+	}
+	close_superseded_pulls net-misc/sendme update/net-misc-sendme-0.37.1 '#8'
+	close_failure_reports net-misc/sendme '' 'net-misc/sendme 0.37.1 is proposed in #8.'
+	assert test "$(grep '^PATCH' "$fixture/api.calls" | sort | xargs)" == \
+		'PATCH /repos/example/repo/issues/5 PATCH /repos/example/repo/issues/6 PATCH /repos/example/repo/pulls/7'
+	: >"$fixture/api.calls"
+	close_failure_reports net-misc/sendme 'Automatic update failed: net-misc/sendme 0.37.1' 'Superseded by #5.'
+	assert test "$(grep '^PATCH' "$fixture/api.calls")" == 'PATCH /repos/example/repo/issues/6'
+	# A failed listing closes nothing and does not stop the caller.
+	api() { return 22; }
+	close_superseded_pulls net-misc/sendme update/net-misc-sendme-0.37.1 '#8'
+	close_failure_reports net-misc/sendme '' unused
 }
 
 test_failure_report() {
@@ -366,7 +401,7 @@ fi
 tests=(test_set_var test_command_substitution_failure test_ego_sum test_cargo_members
 	test_nchat_version_location test_libsignal_offline_patch test_submodule_commit test_gostat_mvs test_ci_keywords test_update_detection
 	test_check_api_failure test_build_arguments test_build_and_smoke_failures test_nchat_build_arguments test_pr_only
-	test_failure_report test_early_failure_report test_check_failure_report test_system_guard test_unrelated_changes)
+	test_superseded_items test_failure_report test_early_failure_report test_check_failure_report test_system_guard test_unrelated_changes)
 for test in "${tests[@]}"; do
 	bash "$test_script" --case "$test"
 	printf 'PASS %s\n' "$test"

@@ -499,6 +499,8 @@ Workflow run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 		--arg head "$branch" --arg base "${BASE_BRANCH:-main}" --arg body "$body" '$ARGS.named')" |
 		jq -r '.number')"
 	printf 'Opened pull request #%s\n' "$number"
+	close_superseded_pulls "$1" "$branch" "#$number"
+	close_failure_reports "$1" "" "$1 $2 is proposed in #$number."
 	if [[ "$(conf_field "$1" 3)" == auto ]]; then
 		api PUT "/repos/$GITHUB_REPOSITORY/pulls/$number/merge" '{"merge_method":"squash"}' >/dev/null
 		printf 'Merged pull request #%s\n' "$number"
@@ -506,11 +508,13 @@ Workflow run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 }
 
 cmd_report_failure() { # PACKAGE VERSION
-	report_issue "Automatic update failed: $1 $2" "The update workflow could not prepare, build or test $1 $2, so the current recipe stays in place.
-Log: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+	local title="Automatic update failed: $1 $2" number
+	number="$(report_issue "$title" "The update workflow could not prepare, build or test $1 $2, so the current recipe stays in place.
+Log: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID")"
+	close_failure_reports "$1" "$title" "Superseded by #$number."
 }
 
-report_issue() { # TITLE BODY: opens the issue, or comments on the open one with this title
+report_issue() { # TITLE BODY -> number of the new issue, or of the open one with this title
 	local title="$1" body="$2" number
 	if [[ -n "${UPDATE_LOG:-}" && -f "$UPDATE_LOG" && -r "$UPDATE_LOG" ]]; then
 		# This log contains only the disposable runner's update/build output. Keep
@@ -525,9 +529,41 @@ report_issue() { # TITLE BODY: opens the issue, or comments on the open one with
 		api POST "/repos/$GITHUB_REPOSITORY/issues/$number/comments" \
 			"$(jq -n --arg body "$body" '$ARGS.named')" >/dev/null
 	else
-		api POST "/repos/$GITHUB_REPOSITORY/issues" \
-			"$(jq -n --arg title "$title" --arg body "$body" '$ARGS.named')" >/dev/null
+		number="$(api POST "/repos/$GITHUB_REPOSITORY/issues" \
+			"$(jq -n --arg title "$title" --arg body "$body" '$ARGS.named')" | jq -r '.number')"
 	fi
+	printf '%s\n' "$number"
+}
+
+# Cleanup must not fail an update that has already been published or reported.
+close_superseded_pulls() { # PACKAGE BRANCH REFERENCE: close the package's other open update pull requests
+	local numbers number
+	numbers="$(api GET "/repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100" |
+		jq -r --arg prefix "update/${1//\//-}-" --arg branch "$2" '.[] |
+			select(.head.ref != $branch and (.head.ref | startswith($prefix)) and
+				(.head.ref | ltrimstr($prefix) | test("^[0-9]"))) | .number')" ||
+		{ printf 'update-package: cannot list the pull requests of %s\n' "$1" >&2; return 0; }
+	for number in $numbers; do
+		api POST "/repos/$GITHUB_REPOSITORY/issues/$number/comments" \
+			"$(jq -n --arg body "Superseded by $3." '$ARGS.named')" >/dev/null &&
+			api PATCH "/repos/$GITHUB_REPOSITORY/pulls/$number" '{"state":"closed"}' >/dev/null ||
+			printf 'update-package: cannot close pull request #%s\n' "$number" >&2
+	done
+}
+
+close_failure_reports() { # PACKAGE KEPT_TITLE COMMENT: close the package's other open failure reports
+	local numbers number
+	numbers="$(api GET "/repos/$GITHUB_REPOSITORY/issues?state=open&per_page=100" |
+		jq -r --arg prefix "Automatic update failed: $1 " --arg kept "$2" '.[] |
+			select((.pull_request | not) and (.title | startswith($prefix)) and .title != $kept) |
+			.number')" ||
+		{ printf 'update-package: cannot list the failure reports of %s\n' "$1" >&2; return 0; }
+	for number in $numbers; do
+		api POST "/repos/$GITHUB_REPOSITORY/issues/$number/comments" \
+			"$(jq -n --arg body "$3" '$ARGS.named')" >/dev/null &&
+			api PATCH "/repos/$GITHUB_REPOSITORY/issues/$number" '{"state":"closed"}' >/dev/null ||
+			printf 'update-package: cannot close issue #%s\n' "$number" >&2
+	done
 }
 
 failed_job_id() { # NAME JOBS: ID of job NAME when it failed, timed out or was cancelled
@@ -558,7 +594,7 @@ cmd_report_run_failure() {
 		job_log "$id" "$work/check.log"
 		UPDATE_LOG="$work/check.log" report_issue "Automatic update check failed" \
 			"The update workflow could not look up new package versions, so no recipe was updated.
-Log: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+Log: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
 	fi
 	entries="$(jq -c '.[]' <<<"${UPDATE_MATRIX:-[]}")"
 	while IFS= read -r entry; do
