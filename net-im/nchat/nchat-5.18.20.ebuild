@@ -164,8 +164,12 @@ src_unpack() {
 src_prepare() {
 	cmake_src_prepare
 	eapply "${FILESDIR}/nchat-explicit-cstdlib.patch"
-	eapply "${FILESDIR}/nchat-libsignal-clang.patch"
-	eapply "${FILESDIR}/nchat-signal-logger.patch"
+	# nchat 5.20 releases contain both Signal fixes: one fixed-array file for
+	# Clang and GCC, and the status-returning logger callbacks.
+	if ver_test -lt 5.20; then
+		eapply "${FILESDIR}/nchat-libsignal-clang.patch"
+		eapply "${FILESDIR}/nchat-signal-logger.patch"
+	fi
 	# Both Go protocols share one runtime in the internal-static build. Seed the
 	# generated module with the pinned union, rather than discovering versions.
 	cp "${FILESDIR}/gostat-go.mod" lib/gostat/go.mod || die
@@ -189,8 +193,8 @@ src_prepare() {
 src_configure() {
 	go-module_src_configure
 	export GOTOOLCHAIN=local GOFLAGS='-buildvcs=false -mod=readonly'
-	# Linux otherwise selects GCC cgo aliases even when CC is Clang.
-	if tc-is-clang; then
+	# Before 5.20, Linux otherwise selects GCC cgo aliases even when CC is Clang.
+	if tc-is-clang && ver_test -lt 5.20; then
 		GOFLAGS+=' -tags=libsignal_clang'
 	fi
 	local mycmakeargs=(
