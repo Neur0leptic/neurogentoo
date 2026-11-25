@@ -543,6 +543,23 @@ LICENSE+=" Apache-2.0 BSD BSD-2 Boost-1.0 BlueOak-1.0.0 CC0-1.0 CDLA-Permissive-
 SLOT="0"
 KEYWORDS="~amd64"
 
+src_prepare() {
+	default
+	# Cargo loads a Git source named in Cargo.toml before it applies the eclass's
+	# GIT_CRATES patches, and that fails offline (yazi 26.9's ratatui-core fork).
+	# Point such entries at the unpacked archives and drop their Git sources from
+	# Cargo.lock, so that --locked still holds.
+	local crate uri commit dir host
+	for crate in "${!GIT_CRATES[@]}"; do
+		grep -q "^${crate} = { git = " Cargo.toml || continue
+		IFS=';' read -r uri commit dir host <<<"${GIT_CRATES[${crate}]}"
+		dir="${WORKDIR}/${dir:-${crate}-%commit%}"
+		sed -i "s|^${crate} = { git = [^}]*}|${crate} = { path = \"${dir//%commit%/${commit}}\" }|" \
+			Cargo.toml || die
+		sed -i "\|^source = \"git+${uri}[.?#].*#${commit}\"$|d" Cargo.lock || die
+	done
+}
+
 src_configure() {
 	cargo_src_configure --locked
 }
