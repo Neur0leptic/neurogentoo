@@ -41,6 +41,36 @@ jobs:
           ONLY_PACKAGE: ${{ github.event_name == 'push' && 'gui-apps/ripdrag' || inputs.package }}
         run: bash .github/scripts/update-package.sh check >>"$GITHUB_OUTPUT"
 
+  test:
+    # The update jobs test the updater only when a package has an update; a push
+    # tests it even when every package is current.
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/gentoo/stage3:amd64-nomultilib-openrc
+      options: --cap-add=SYS_ADMIN --security-opt seccomp=unconfined --security-opt apparmor=unconfined
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    permissions:
+      contents: read
+    steps:
+      - name: Prepare Gentoo tools
+        run: |
+          emerge-webrsync --quiet
+          getuto
+          emerge --quiet --oneshot --getbinpkg --noreplace --autounmask=n \
+            dev-vcs/git app-misc/jq sys-devel/patch dev-lang/go
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Test updater behavior
+        run: |
+          # The checkout belongs to the runner user; this step runs as root.
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          bash .github/tests/update-package.sh
+
   update:
     name: Update ${{ matrix.package }} ${{ matrix.version }}
     needs: check
