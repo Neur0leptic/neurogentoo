@@ -92,6 +92,7 @@ test_nchat_version_location() {
 test_libsignal_offline_patch() {
 	local boring=0123456789012345678901234567890123456789
 	local spqr=abcdef0123456789abcdef0123456789abcdef01
+	local boringssl=fedcba9876543210fedcba9876543210fedcba98
 	mkdir -p "$fixture/libsignal" "$fixture/recipe-dir"
 	printf 'BORING_COMMIT="%s"\nSPQR_COMMIT="%s"\n' "$boring" "$spqr" >"$fixture/recipe-dir/recipe"
 	cat >"$fixture/libsignal/Cargo.toml" <<'EOF'
@@ -124,12 +125,17 @@ EOF
 	bump_ebuild() { printf '%s' "$fixture/recipe-dir/recipe"; }
 	fetch_source() { printf '%s' "$fixture/libsignal"; }
 	regenerate_cargo() { :; }
-	api() { printf '{"sha":"%s"}\n' "$boring"; }
+	submodule_commit() {
+		[[ "$1 $2 $3" == "https://github.com/signalapp/boring.git $boring boring-sys/deps/boringssl" ]] ||
+			die "unexpected submodule lookup: $*"
+		printf '%s' "$boringssl"
+	}
 	refresh_manifest() { :; }
 	check_package() { :; }
 	update_libsignal 99.0.1
 	assert grep -qxF "BORING_COMMIT=\"$boring\"" "$fixture/recipe-dir/recipe"
 	assert grep -qxF "SPQR_COMMIT=\"$spqr\"" "$fixture/recipe-dir/recipe"
+	assert grep -qxF "BORINGSSL_COMMIT=\"$boringssl\"" "$fixture/recipe-dir/recipe"
 	assert cmp "$fixture/recipe-dir/files/libsignal-offline-git.patch" "$fixture/patch.before"
 	sed -i 's|signalapp/boring|example/boring|g' "$fixture/libsignal/Cargo.toml"
 	expect_failure 'source "$UPDATER"; regenerate_libsignal_patch "$FIXTURE/recipe-dir/recipe" "$FIXTURE/libsignal"'
@@ -142,6 +148,24 @@ EOF
 	printf 'other = { git = "https://github.com/example/other", tag = "v1" }\n' >>"$fixture/libsignal/Cargo.toml"
 	expect_failure 'source "$UPDATER"; regenerate_libsignal_patch "$FIXTURE/recipe-dir/recipe" "$FIXTURE/libsignal"'
 	assert cmp "$fixture/recipe-dir/files/libsignal-offline-git.patch" "$fixture/patch.before"
+}
+
+test_submodule_commit() {
+	local server="$fixture/boring.git" tree commit
+	local boringssl=fedcba9876543210fedcba9876543210fedcba98
+	# A local repository stands in for GitHub; the tree holds a submodule pointer.
+	git -c init.defaultBranch=main init -q --bare "$server"
+	git -C "$server" config uploadpack.allowFilter true
+	tree="$(printf '160000 commit %s\tboringssl\n' "$boringssl" | git -C "$server" mktree)"
+	tree="$(printf '040000 tree %s\tdeps\n' "$tree" | git -C "$server" mktree)"
+	commit="$(GIT_AUTHOR_NAME=test GIT_AUTHOR_EMAIL=test@example.invalid \
+		GIT_COMMITTER_NAME=test GIT_COMMITTER_EMAIL=test@example.invalid \
+		git -C "$server" commit-tree -m fixture "$tree")"
+	git -C "$server" update-ref refs/heads/main "$commit"
+	assert test "$(submodule_commit "file://$server" "$commit" deps/boringssl)" == "$boringssl"
+	export SUBMODULE_TEST_COMMIT="$commit"
+	expect_failure 'source "$UPDATER"; submodule_commit "file://$FIXTURE/boring.git" "$SUBMODULE_TEST_COMMIT" deps/missing'
+	expect_failure 'source "$UPDATER"; submodule_commit "file://$FIXTURE/boring.git" --upload-pack=false deps/boringssl'
 }
 
 test_gostat_mvs() {
@@ -340,7 +364,7 @@ if [[ "${1:-}" == --case ]]; then
 fi
 
 tests=(test_set_var test_command_substitution_failure test_ego_sum test_cargo_members
-	test_nchat_version_location test_libsignal_offline_patch test_gostat_mvs test_ci_keywords test_update_detection
+	test_nchat_version_location test_libsignal_offline_patch test_submodule_commit test_gostat_mvs test_ci_keywords test_update_detection
 	test_check_api_failure test_build_arguments test_build_and_smoke_failures test_nchat_build_arguments test_pr_only
 	test_failure_report test_early_failure_report test_check_failure_report test_system_guard test_unrelated_changes)
 for test in "${tests[@]}"; do

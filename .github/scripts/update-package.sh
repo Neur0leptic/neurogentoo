@@ -257,6 +257,21 @@ lock_git_commit() { # CARGO_LOCK CRATE -> commit of the crate's git source
 		/^source = "git\+/ && name == crate { sub(/.*#/, ""); sub(/".*/, ""); print; exit }' "$1"
 }
 
+submodule_commit() { # URL COMMIT PATH -> commit that the submodule at PATH points to
+	local work commit=""
+	[[ "$2" =~ ^[0-9a-f]{40}$ ]] || die "invalid commit: $2"
+	work="$(mktemp -d)"
+	# A shallow fetch without file contents reads only the trees. Unlike the REST
+	# API (60 requests per hour without a token), it needs no token.
+	if git -c init.defaultBranch=main init -q "$work" &&
+		git -C "$work" fetch -q --depth 1 --filter=blob:none "$1" "$2"; then
+		commit="$(git -C "$work" ls-tree FETCH_HEAD -- "$3" | awk '$2 == "commit" { print $3 }')" || true
+	fi
+	rm -rf -- "$work"
+	[[ "$commit" =~ ^[0-9a-f]{40}$ ]] || die "no submodule $3 in $1 at $2"
+	printf '%s' "$commit"
+}
+
 regenerate_libsignal_patch() { # EBUILD SOURCE_DIR: use the same commits as GIT_CRATES
 	local boring spqr patch
 	boring="$(sed -n 's/^BORING_COMMIT="\([0-9a-f]*\)"$/\1/p' "$1")"
@@ -321,8 +336,8 @@ update_libsignal() { # VERSION: the libsignal-ffi release that nchat requires
 	set_var "$ebuild" SPQR_COMMIT "$(lock_git_commit "$source/Cargo.lock" spqr)"
 	regenerate_libsignal_patch "$ebuild" "$source"
 	# boring-sys builds the BoringSSL revision recorded as its git submodule.
-	set_var "$ebuild" BORINGSSL_COMMIT "$(api GET \
-		"/repos/signalapp/boring/contents/boring-sys/deps/boringssl?ref=$boring" | jq -r '.sha')"
+	set_var "$ebuild" BORINGSSL_COMMIT "$(submodule_commit \
+		https://github.com/signalapp/boring.git "$boring" boring-sys/deps/boringssl)"
 	refresh_manifest net-libs/libsignal-ffi
 	check_package net-libs/libsignal-ffi
 }
