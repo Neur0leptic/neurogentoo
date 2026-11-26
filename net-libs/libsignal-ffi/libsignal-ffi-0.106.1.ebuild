@@ -4,14 +4,14 @@
 EAPI=8
 
 RUST_MIN_VER="1.95.0"
-BORING_COMMIT="2c157897feea0c54f5eca93407a157fa90703b5f"
-BORINGSSL_COMMIT="91a66a59b6c1435120ff83e245d7719411294386"
-SPQR_COMMIT="fd320484dcec89004021e6fdc7481825f5f261fa"
+BORING_COMMIT="b518db81426b8b53e84b1cb1cda43fdfd021022c"
+BORINGSSL_COMMIT="427ec40cc8edc545253289232e885708c409e5ea"
+SPQR_COMMIT="06959b4708f9b7b1e94d0f8cc835f3958c077e94"
 declare -A GIT_CRATES=(
-	[boring]="https://github.com/signalapp/boring;${BORING_COMMIT};boring-%commit%/boring"
-	[boring-sys]="https://github.com/signalapp/boring;${BORING_COMMIT};boring-%commit%/boring-sys"
-	[tokio-boring]="https://github.com/signalapp/boring;${BORING_COMMIT};boring-%commit%/tokio-boring"
-	[spqr]="https://github.com/signalapp/SparsePostQuantumRatchet;${SPQR_COMMIT};SparsePostQuantumRatchet-%commit%"
+	[boring-sys]='https://github.com/signalapp/boring;b518db81426b8b53e84b1cb1cda43fdfd021022c;boring-%commit%/boring-sys'
+	[boring]='https://github.com/signalapp/boring;b518db81426b8b53e84b1cb1cda43fdfd021022c;boring-%commit%/boring'
+	[spqr]='https://github.com/signalapp/SparsePostQuantumRatchet;06959b4708f9b7b1e94d0f8cc835f3958c077e94;SparsePostQuantumRatchet-%commit%'
+	[tokio-boring]='https://github.com/signalapp/boring;b518db81426b8b53e84b1cb1cda43fdfd021022c;boring-%commit%/tokio-boring'
 )
 # BEGIN GENERATED DEPENDENCIES
 CRATES="
@@ -19,26 +19,26 @@ CRATES="
 	adler2@2.0.1
 	aead@0.5.2
 	aead@0.6.1
+	aes-gcm-siv@0.12.0
+	aes-gcm@0.10.3
 	aes@0.8.4
 	aes@0.9.1
-	aes-gcm@0.10.3
-	aes-gcm-siv@0.11.1
 	aho-corasick@1.1.4
 	android_system_properties@0.1.5
 	anes@0.1.6
 	anstream@1.0.0
-	anstyle@1.0.14
 	anstyle-parse@1.0.0
 	anstyle-query@1.1.5
 	anstyle-wincon@3.0.11
+	anstyle@1.0.14
 	anyhow@1.0.103
 	arbitrary@1.4.2
 	argon2@0.5.3
 	arrayvec@0.7.8
-	asn1@0.24.1
-	asn1-rs@0.7.2
 	asn1-rs-derive@0.6.0
 	asn1-rs-impl@0.2.0
+	asn1-rs@0.7.2
+	asn1@0.24.1
 	asn1_derive@0.24.1
 	assert_cmd@2.2.2
 	assert_matches@1.5.0
@@ -63,7 +63,7 @@ CRATES="
 	block-buffer@0.10.4
 	block-buffer@0.12.1
 	block-padding@0.4.2
-	breakpad-symbols@0.22.2
+	breakpad-symbols@0.27.0
 	bs58@0.5.1
 	bstr@1.12.3
 	bumpalo@3.20.3
@@ -72,23 +72,22 @@ CRATES="
 	cast@0.3.0
 	cbc@0.2.1
 	cc@1.2.66
-	cesu8@1.1.0
 	cexpr@0.6.0
 	cfg-if@1.0.4
-	chacha20@0.10.1
+	chacha20@0.10.2
 	chacha20@0.9.1
 	chacha20poly1305@0.10.1
 	chacha20poly1305@0.11.0
 	chrono@0.4.45
-	ciborium@0.2.2
 	ciborium-io@0.2.2
 	ciborium-ll@0.2.2
+	ciborium@0.2.2
 	cipher@0.4.4
 	cipher@0.5.2
 	circular@0.3.0
 	clang-sys@1.8.1
-	clap@4.6.1
 	clap-stdin@0.8.1
+	clap@4.6.1
 	clap_builder@4.6.0
 	clap_derive@4.6.1
 	clap_lex@1.1.0
@@ -101,17 +100,16 @@ CRATES="
 	const-oid@0.10.2
 	const-str@1.1.0
 	convert_case@0.10.0
-	convert_case@0.4.0
-	core-foundation@0.10.1
 	core-foundation-sys@0.8.7
+	core-foundation@0.10.1
 	core-models@0.0.7
 	cpubits@0.1.1
 	cpufeatures@0.2.17
 	cpufeatures@0.3.0
 	crabgrind@0.2.6
 	crc32fast@1.5.0
-	criterion@0.5.1
 	criterion-plot@0.5.0
+	criterion@0.5.1
 	critical-section@1.2.0
 	crossbeam-deque@0.8.7
 	crossbeam-epoch@0.9.20
@@ -121,23 +119,23 @@ CRATES="
 	crypto-common@0.2.2
 	ctr@0.10.1
 	ctr@0.9.2
-	ctutils@0.4.2
+	ctutils@0.4.5
+	curve25519-dalek-derive@0.1.1
 	curve25519-dalek@4.1.3
 	curve25519-dalek@5.0.0
-	curve25519-dalek-derive@0.1.1
 	darling@0.20.11
 	darling@0.23.0
 	darling_core@0.20.11
 	darling_core@0.23.0
 	darling_macro@0.20.11
 	darling_macro@0.23.0
-	data-encoding@2.11.0
-	data-encoding-macro@0.1.20
 	data-encoding-macro-internal@0.1.18
+	data-encoding-macro@0.1.20
+	data-encoding@2.11.0
 	debugid@0.8.0
-	defmt@1.1.1
 	defmt-macros@1.1.1
 	defmt-parser@1.0.0
+	defmt@1.1.1
 	der-parser@10.0.0
 	deranged@0.5.8
 	derive-where@1.6.1
@@ -145,23 +143,22 @@ CRATES="
 	derive_builder@0.20.2
 	derive_builder_core@0.20.2
 	derive_builder_macro@0.20.2
-	derive_more@0.99.20
-	derive_more@2.1.1
 	derive_more-impl@2.1.1
+	derive_more@2.1.1
 	derive_utils@0.15.1
 	diff@0.1.13
 	difflib@0.4.0
 	digest@0.10.7
 	digest@0.11.3
-	dir-test@0.4.1
 	dir-test-macros@0.4.1
+	dir-test@0.4.1
 	displaydoc@0.2.6
-	downcast-rs@1.2.1
-	dyn-clonable@0.9.2
+	downcast-rs@2.0.2
 	dyn-clonable-impl@0.9.2
+	dyn-clonable@0.9.2
 	dyn-clone@1.0.20
-	ed25519@3.0.0
 	ed25519-dalek@3.0.0
+	ed25519@3.0.0
 	either@1.16.0
 	encoding_rs@0.8.35
 	env_filter@2.0.0
@@ -176,13 +173,12 @@ CRATES="
 	flate2@1.1.9
 	fnv@1.0.7
 	foldhash@0.1.5
-	foreign-types@0.5.0
 	foreign-types-macros@0.2.3
 	foreign-types-shared@0.3.1
+	foreign-types@0.5.0
 	form_urlencoded@1.2.2
 	fs_extra@1.3.0
 	fslock@0.2.1
-	futures@0.3.32
 	futures-channel@0.3.32
 	futures-core@0.3.32
 	futures-executor@0.3.32
@@ -191,6 +187,7 @@ CRATES="
 	futures-sink@0.3.32
 	futures-task@0.3.32
 	futures-util@0.3.32
+	futures@0.3.32
 	generic-array@0.14.7
 	getrandom@0.2.17
 	getrandom@0.3.4
@@ -199,16 +196,16 @@ CRATES="
 	ghash@0.6.0
 	gimli@0.32.3
 	glob@0.3.3
-	h2@0.4.15
+	h2@0.4.16
 	half@2.7.1
 	hashbrown@0.12.3
 	hashbrown@0.15.5
 	hashbrown@0.17.1
-	hax-lib@0.3.7
-	hax-lib-macros@0.3.7
 	hax-lib-macros-types@0.3.7
-	headers@0.4.1
+	hax-lib-macros@0.3.7
+	hax-lib@0.3.7
 	headers-core@0.3.0
+	headers@0.4.1
 	heck@0.5.0
 	hermit-abi@0.5.2
 	hex@0.4.3
@@ -216,18 +213,18 @@ CRATES="
 	hkdf@0.13.0
 	hmac@0.13.0
 	home@0.5.12
-	hpke-rs@0.7.0
 	hpke-rs-crypto@0.7.0
-	http@1.4.2
-	http-body@1.0.1
+	hpke-rs@0.7.0
 	http-body-util@0.1.3
+	http-body@1.0.1
+	http@1.4.2
 	httparse@1.10.1
 	httpdate@1.0.3
 	hybrid-array@0.4.13
-	hyper@1.10.1
 	hyper-util@0.1.20
-	iana-time-zone@0.1.65
+	hyper@1.10.1
 	iana-time-zone-haiku@0.1.2
+	iana-time-zone@0.1.65
 	icu_collections@2.2.0
 	icu_locale_core@2.2.0
 	icu_normalizer@2.2.0
@@ -251,14 +248,12 @@ CRATES="
 	itertools@0.14.0
 	itertools@0.15.0
 	itoa@1.0.18
-	jiff@0.2.31
 	jiff-static@0.2.31
-	jni@0.21.1
-	jni@0.22.4
+	jiff@0.2.31
 	jni-macros@0.22.4
-	jni-sys@0.3.1
-	jni-sys@0.4.1
 	jni-sys-macros@0.4.1
+	jni-sys@0.4.1
+	jni@0.22.4
 	js-sys@0.3.103
 	lazy_static@1.5.0
 	libc@0.2.186
@@ -273,43 +268,44 @@ CRATES="
 	libcrux-sha3@0.0.10
 	libcrux-traits@0.0.8
 	libloading@0.8.9
+	libm@0.2.16
 	libz-sys@1.1.29
-	linkme@0.3.36
 	linkme-impl@0.3.36
+	linkme@0.3.36
 	linux-raw-sys@0.12.1
 	linux-raw-sys@0.4.15
 	litemap@0.8.2
 	log@0.4.33
-	macro_rules_attribute@0.2.2
 	macro_rules_attribute-proc_macro@0.2.2
+	macro_rules_attribute@0.2.2
 	matchers@0.2.0
-	mediasan-common@0.5.3
+	mediasan-common@0.5.4
 	memchr@2.8.2
 	memmap2@0.9.11
 	memo-map@0.3.3
 	mime@0.3.17
 	mime_guess@2.0.5
-	minidump@0.22.2
-	minidump-common@0.22.2
-	minidump-processor@0.22.1
-	minidump-unwind@0.22.2
+	minidump-common@0.27.0
+	minidump-processor@0.27.0
+	minidump-unwind@0.27.0
+	minidump@0.27.0
 	minijinja@2.21.0
 	minimal-lexical@0.2.1
 	miniz_oxide@0.8.9
 	mio@1.2.1
-	mp4san@0.5.3
-	mp4san-derive@0.5.3
+	mp4san-derive@0.5.4
+	mp4san@0.5.4
 	multimap@0.10.1
-	neon@1.1.1
 	neon-macros@1.1.1
-	nom@7.1.3
-	nom-derive@0.10.1
+	neon@1.1.1
 	nom-derive-impl@0.10.1
+	nom-derive@0.10.1
+	nom@7.1.3
 	nonzero_ext@0.3.0
 	nu-ansi-term@0.50.3
 	num-bigint@0.4.8
 	num-conv@0.2.2
-	num-derive@0.4.2
+	num-derive@0.5.1
 	num-integer@0.1.46
 	num-traits@0.2.19
 	num_enum@0.7.6
@@ -322,14 +318,14 @@ CRATES="
 	opaque-debug@0.3.1
 	openssl-macros@0.1.1
 	openssl-probe@0.2.1
-	partial-default@0.1.0
 	partial-default-derive@0.1.0
+	partial-default@0.1.0
 	password-hash@0.5.0
 	paste@1.0.15
 	pastey@0.2.3
-	pbjson@0.9.0
 	pbjson-build@0.9.0
 	pbjson-types@0.9.0
+	pbjson@0.9.0
 	pem@3.0.6
 	percent-encoding@2.3.2
 	pest@2.8.7
@@ -341,42 +337,42 @@ CRATES="
 	phf_codegen@0.11.3
 	phf_generator@0.11.3
 	phf_shared@0.11.3
-	pin-project@1.1.13
 	pin-project-internal@1.1.13
 	pin-project-lite@0.2.17
+	pin-project@1.1.13
 	pkg-config@0.3.33
-	plotters@0.3.7
 	plotters-backend@0.3.7
 	plotters-svg@0.3.7
+	plotters@0.3.7
 	poly1305@0.8.0
 	poly1305@0.9.1
 	polyval@0.6.2
 	polyval@0.7.3
-	portable-atomic@1.13.1
 	portable-atomic-util@0.2.7
+	portable-atomic@1.13.1
 	potential_utf@0.1.5
 	powerfmt@0.2.0
 	ppv-lite86@0.2.21
-	predicates@3.1.4
 	predicates-core@1.0.10
 	predicates-tree@1.0.13
+	predicates@3.1.4
 	pretty_assertions@1.4.1
 	prettyplease@0.2.37
 	proc-macro-crate@3.5.0
 	proc-macro-error-attr2@2.0.0
 	proc-macro-error2@2.0.1
 	proc-macro2@1.0.106
-	procfs-core@0.17.0
-	proptest@1.11.0
+	procfs-core@0.18.0
 	proptest-arbitrary-interop@0.1.0
-	prost@0.14.4
+	proptest@1.11.0
 	prost-build@0.14.4
 	prost-derive@0.14.4
 	prost-types@0.14.4
-	protobuf@3.7.2
+	prost@0.14.4
 	protobuf-codegen@3.7.2
 	protobuf-parse@3.7.2
 	protobuf-support@3.7.2
+	protobuf@3.7.2
 	quick-error@1.2.3
 	quote@1.0.46
 	r-efi@5.3.0
@@ -388,17 +384,18 @@ CRATES="
 	rand_core@0.10.1
 	rand_core@0.6.4
 	rand_core@0.9.5
+	rand_distr@0.5.1
 	rand_xorshift@0.4.0
 	range-map@0.2.0
 	rangemap@1.7.1
-	rayon@1.12.0
 	rayon-core@1.13.0
+	rayon@1.12.0
 	rcgen@0.14.8
-	ref-cast@1.0.25
 	ref-cast-impl@1.0.25
-	regex@1.12.4
+	ref-cast@1.0.25
 	regex-automata@0.4.14
 	regex-syntax@0.8.11
+	regex@1.12.4
 	ring@0.17.14
 	rustc-demangle@0.1.27
 	rustc-hash@2.1.3
@@ -406,12 +403,12 @@ CRATES="
 	rusticata-macros@4.1.0
 	rustix@0.38.44
 	rustix@1.1.4
-	rustls@0.23.41
 	rustls-native-certs@0.8.4
 	rustls-pki-types@1.15.0
-	rustls-platform-verifier@0.5.3
-	rustls-platform-verifier-android@0.1.1
-	rustls-webpki@0.103.13
+	rustls-platform-verifier-android@0.2.0
+	rustls-platform-verifier@0.7.1
+	rustls-webpki@0.103.16
+	rustls@0.23.46
 	rustversion@1.0.23
 	rusty-fork@0.3.1
 	ryu@1.0.23
@@ -421,17 +418,17 @@ CRATES="
 	schemars@1.2.1
 	scoped-tls@1.0.1
 	scopeguard@1.2.0
-	scroll@0.12.0
-	scroll_derive@0.12.1
-	security-framework@3.7.0
+	scroll@0.13.0
+	scroll_derive@0.13.1
 	security-framework-sys@2.17.0
+	security-framework@3.7.0
 	semver@1.0.28
 	send_wrapper@0.6.0
 	serde@1.0.228
 	serde_core@1.0.228
 	serde_derive@1.0.228
-	serde_json@1.0.150
 	serde_json5@0.2.1
+	serde_json@1.0.150
 	serde_urlencoded@0.7.1
 	serde_with@3.21.0
 	serde_with_macros@3.21.0
@@ -462,53 +459,54 @@ CRATES="
 	strum@0.28.0
 	strum_macros@0.28.0
 	subtle@2.6.1
+	syn-mid@0.6.1
 	syn@1.0.109
 	syn@2.0.118
-	syn-mid@0.6.1
+	syn@3.0.3
 	sync_wrapper@1.0.2
 	synstructure@0.13.2
 	tempfile@3.27.0
 	termtree@0.5.1
-	test-case@3.3.1
 	test-case-core@3.3.1
 	test-case-macros@3.3.1
-	test-log@0.2.21
+	test-case@3.3.1
 	test-log-core@0.2.21
 	test-log-macros@0.2.21
+	test-log@0.2.21
 	testing_logger@0.1.1
-	thiserror@1.0.69
-	thiserror@2.0.18
 	thiserror-impl@1.0.69
 	thiserror-impl@2.0.18
+	thiserror@1.0.69
+	thiserror@2.0.18
 	thread_local@1.1.9
-	time@0.3.53
 	time-core@0.1.9
 	time-macros@0.2.31
+	time@0.3.53
 	tinystr@0.8.3
 	tinytemplate@1.2.1
-	tinyvec@1.11.0
+	tinyvec@1.13.2
 	tinyvec_macros@0.1.1
 	tls-parser@0.12.2
-	tokio@1.52.3
 	tokio-macros@2.7.0
 	tokio-socks@0.5.3
 	tokio-stream@0.1.18
 	tokio-tungstenite@0.29.0
 	tokio-util@0.7.18
+	tokio@1.54.1
 	toml_datetime@1.1.1+spec-1.1.0
 	toml_edit@0.25.12+spec-1.1.0
 	toml_parser@1.1.2+spec-1.1.0
-	tonic@0.14.6
 	tonic-build@0.14.6
-	tonic-prost@0.14.6
 	tonic-prost-build@0.14.6
+	tonic-prost@0.14.6
+	tonic@0.14.6
 	tower-layer@0.3.3
 	tower-service@0.3.3
-	tracing@0.1.44
 	tracing-attributes@0.1.31
 	tracing-core@0.1.36
 	tracing-log@0.2.0
 	tracing-subscriber@0.3.23
+	tracing@0.1.44
 	try-lock@0.2.5
 	tungstenite@0.29.0
 	typenum@1.20.1
@@ -535,45 +533,35 @@ CRATES="
 	warp@0.4.3
 	wasi@0.11.1+wasi-snapshot-preview1
 	wasip2@1.0.4+wasi-0.2.12
-	wasm-bindgen@0.2.126
-	wasm-bindgen-macro@0.2.126
 	wasm-bindgen-macro-support@0.2.126
+	wasm-bindgen-macro@0.2.126
 	wasm-bindgen-shared@0.2.126
+	wasm-bindgen@0.2.126
 	web-sys@0.3.103
-	webpki-root-certs@0.26.11
-	webpki-root-certs@1.0.8
-	webpsan@0.5.3
+	webpki-root-certs@1.0.10
+	webpsan@0.5.4
 	which@4.4.2
-	winapi@0.3.9
 	winapi-i686-pc-windows-gnu@0.4.0
 	winapi-util@0.1.11
 	winapi-x86_64-pc-windows-gnu@0.4.0
+	winapi@0.3.9
 	windows-core@0.62.2
 	windows-implement@0.60.2
 	windows-interface@0.59.3
 	windows-link@0.2.1
 	windows-result@0.4.1
 	windows-strings@0.5.1
-	windows-sys@0.45.0
 	windows-sys@0.52.0
 	windows-sys@0.59.0
 	windows-sys@0.61.2
-	windows-targets@0.42.2
 	windows-targets@0.52.6
-	windows_aarch64_gnullvm@0.42.2
 	windows_aarch64_gnullvm@0.52.6
-	windows_aarch64_msvc@0.42.2
 	windows_aarch64_msvc@0.52.6
-	windows_i686_gnu@0.42.2
 	windows_i686_gnu@0.52.6
 	windows_i686_gnullvm@0.52.6
-	windows_i686_msvc@0.42.2
 	windows_i686_msvc@0.52.6
-	windows_x86_64_gnu@0.42.2
 	windows_x86_64_gnu@0.52.6
-	windows_x86_64_gnullvm@0.42.2
 	windows_x86_64_gnullvm@0.52.6
-	windows_x86_64_msvc@0.42.2
 	windows_x86_64_msvc@0.52.6
 	winnow@1.0.3
 	wit-bindgen@0.57.1
@@ -582,17 +570,17 @@ CRATES="
 	x509-parser@0.18.1
 	yansi@1.0.1
 	yasna@0.6.0
-	yoke@0.8.3
 	yoke-derive@0.8.2
-	zerocopy@0.8.53
+	yoke@0.8.3
 	zerocopy-derive@0.8.53
-	zerofrom@0.1.8
+	zerocopy@0.8.53
 	zerofrom-derive@0.1.7
+	zerofrom@0.1.8
 	zeroize@1.9.0
 	zeroize_derive@1.5.0
 	zerotrie@0.2.4
-	zerovec@0.11.6
 	zerovec-derive@0.11.3
+	zerovec@0.11.6
 	zmij@1.0.21
 "
 # END GENERATED DEPENDENCIES
@@ -608,7 +596,10 @@ S="${WORKDIR}/libsignal-${PV}"
 
 LICENSE="AGPL-3"
 # Dependent crate licenses
-LICENSE+=" GPL-3+ Apache-2.0 BSD BSD-2 CDLA-Permissive-2.0 ISC MIT MPL-2.0 openssl Unicode-3.0 ZLIB"
+LICENSE+="
+	AGPL-3 Apache-2.0 BSD CDLA-Permissive-2.0 GPL-3+ ISC MIT MPL-2.0
+	Unicode-3.0 ZLIB
+"
 SLOT="0"
 KEYWORDS="~amd64"
 BDEPEND="dev-build/cmake

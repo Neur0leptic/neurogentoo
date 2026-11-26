@@ -1,14 +1,14 @@
 --- a/Cargo.toml
 +++ b/Cargo.toml
-@@ -95,3 +95,3 @@
--boring-signal = { git = "https://github.com/signalapp/boring", tag = "signal-v5.0.2", package = "boring", default-features = false }
--spqr = { git = "https://github.com/signalapp/SparsePostQuantumRatchet.git", tag = "v1.5.3" }
--tokio-boring-signal = { git = "https://github.com/signalapp/boring", tag = "signal-v5.0.2", package = "tokio-boring" }
-+boring-signal = { path = "../boring-2c157897feea0c54f5eca93407a157fa90703b5f/boring", package = "boring", default-features = false }
-+spqr = { path = "../SparsePostQuantumRatchet-fd320484dcec89004021e6fdc7481825f5f261fa" }
-+tokio-boring-signal = { path = "../boring-2c157897feea0c54f5eca93407a157fa90703b5f/tokio-boring", package = "tokio-boring" }
-@@ -243,2 +243,2 @@
--boring = { git = 'https://github.com/signalapp/boring', tag = "signal-v5.0.2" }
--boring-sys = { git = 'https://github.com/signalapp/boring', tag = "signal-v5.0.2" }
-+boring = { path = "../boring-2c157897feea0c54f5eca93407a157fa90703b5f/boring" }
-+boring-sys = { path = "../boring-2c157897feea0c54f5eca93407a157fa90703b5f/boring-sys" }
+@@ -106,3 +106,3 @@
+-boring-signal = { git = "https://github.com/signalapp/boring", tag = "signal-v5.3.0", package = "boring", default-features = false }
+-spqr = { git = "https://github.com/signalapp/SparsePostQuantumRatchet.git", tag = "v1.6.0" }
+-tokio-boring-signal = { git = "https://github.com/signalapp/boring", tag = "signal-v5.3.0", package = "tokio-boring" }
++boring-signal = { path = "../boring-b518db81426b8b53e84b1cb1cda43fdfd021022c/boring", package = "boring", default-features = false }
++spqr = { path = "../SparsePostQuantumRatchet-06959b4708f9b7b1e94d0f8cc835f3958c077e94" }
++tokio-boring-signal = { path = "../boring-b518db81426b8b53e84b1cb1cda43fdfd021022c/tokio-boring", package = "tokio-boring" }
+@@ -255,2 +255,2 @@
+-boring = { git = 'https://github.com/signalapp/boring', tag = "signal-v5.3.0" }
+-boring-sys = { git = 'https://github.com/signalapp/boring', tag = "signal-v5.3.0" }
++boring = { path = "../boring-b518db81426b8b53e84b1cb1cda43fdfd021022c/boring" }
++boring-sys = { path = "../boring-b518db81426b8b53e84b1cb1cda43fdfd021022c/boring-sys" }
