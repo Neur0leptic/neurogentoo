@@ -1,2 +1,2 @@
-app-misc/yazi::neurogentoo install-rust-thinlto
+app-misc/yazi install-rust-thinlto
 gui-apps/ripdrag::neurogentoo install-rust-thinlto

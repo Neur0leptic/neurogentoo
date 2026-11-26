@@ -1,8 +1,9 @@
 app-misc/unimatrix::neurogentoo ~amd64
-app-misc/yazi::neurogentoo ~amd64
+app-misc/yazi ~amd64
 app-misc/timer::neurogentoo ~amd64
 gui-apps/clipse::neurogentoo ~amd64
 gui-apps/ripdrag::neurogentoo ~amd64
 gui-apps/wayland-pipewire-idle-inhibit::neurogentoo ~amd64
 gui-wm/dwl::neurogentoo **
 gui-libs/wlroots:0.20 ~amd64
+dev-libs/jemalloc ~amd64
