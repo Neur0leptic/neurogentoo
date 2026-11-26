@@ -323,6 +323,37 @@ test_pr_only() {
 	assert grep -q 'push -q --force origin update/gui-apps-ripdrag-0.4.13$' "$fixture/git.calls"
 }
 
+test_auto_merge() {
+	make_package
+	printf 'gui-apps/ripdrag cargo auto ripdrag --help\n' >"$conf"
+	export GITHUB_TOKEN=fixture-token GITHUB_REPOSITORY=example/repo \
+		GITHUB_SERVER_URL=https://github.com GITHUB_RUN_ID=123
+	git() { :; }
+	sleep() { :; }
+	# The first merge request is refused, as while GitHub computes mergeability.
+	api() {
+		printf '%s %s\n' "$1" "$2" >>"$fixture/api.calls"
+		case "$1 $2" in
+			"POST /repos/example/repo/pulls") printf '{"number":42}\n' ;;
+			"PUT /repos/example/repo/pulls/42/merge")
+				[[ "$(grep -c '^PUT ' "$fixture/api.calls")" -gt 1 ]] || return 22 ;;
+			"DELETE /repos/example/repo/git/refs/heads/update/gui-apps-ripdrag-0.4.13" | GET\ *) ;;
+			*) die "unexpected request: $1 $2" ;;
+		esac
+	}
+	cmd_publish gui-apps/ripdrag 0.4.13 >/dev/null
+	assert test "$(grep -c '^PUT ' "$fixture/api.calls")" == 2
+	assert grep -qx 'DELETE /repos/example/repo/git/refs/heads/update/gui-apps-ripdrag-0.4.13' "$fixture/api.calls"
+	# A merge that keeps failing fails the job, and the branch stays for a manual merge.
+	: >"$fixture/api.calls"
+	expect_failure 'source "$UPDATER"; GITHUB_REPOSITORY=example/repo; sleep() { :; }
+		api() { printf "%s %s\n" "$1" "$2" >>"$FIXTURE/api.calls"; [[ $1 != PUT ]]; }
+		merge_pull 42 update/gui-apps-ripdrag-0.4.13'
+	assert test "$(grep -c '^PUT ' "$fixture/api.calls")" == 3
+	assert test "$(grep -c '^DELETE ' "$fixture/api.calls")" == 0
+	assert grep -q 'cannot merge pull request #42' "$fixture/failure.log"
+}
+
 test_superseded_items() {
 	export GITHUB_REPOSITORY=example/repo
 	api() {
@@ -337,7 +368,7 @@ test_superseded_items() {
 					{"number":6,"title":"Automatic update failed: net-misc/sendme 0.37.0"},
 					{"number":10,"title":"Automatic update failed: net-misc/sendme-bin 1.0"},
 					{"number":11,"title":"Automatic update failed: net-misc/sendme 0.36.0","pull_request":{}}]' ;;
-			POST\ */comments | PATCH\ *) ;;
+			POST\ */comments | PATCH\ * | DELETE\ *) ;;
 			*) die "unexpected request: $1 $2" ;;
 		esac
 	}
@@ -345,6 +376,9 @@ test_superseded_items() {
 	close_failure_reports net-misc/sendme '' 'net-misc/sendme 0.37.1 is proposed in #8.'
 	assert test "$(grep '^PATCH' "$fixture/api.calls" | sort | xargs)" == \
 		'PATCH /repos/example/repo/issues/5 PATCH /repos/example/repo/issues/6 PATCH /repos/example/repo/pulls/7'
+	# Only the closed pull request's branch goes.
+	assert test "$(grep '^DELETE' "$fixture/api.calls")" == \
+		'DELETE /repos/example/repo/git/refs/heads/update/net-misc-sendme-0.37.0'
 	: >"$fixture/api.calls"
 	close_failure_reports net-misc/sendme 'Automatic update failed: net-misc/sendme 0.37.1' 'Superseded by #5.'
 	assert test "$(grep '^PATCH' "$fixture/api.calls")" == 'PATCH /repos/example/repo/issues/6'
@@ -431,7 +465,7 @@ fi
 
 tests=(test_set_var test_command_substitution_failure test_ego_sum test_cargo_members test_cargo_fetch_retry
 	test_nchat_version_location test_libsignal_offline_patch test_submodule_commit test_gostat_mvs test_ci_keywords test_update_detection
-	test_check_api_failure test_build_arguments test_build_and_smoke_failures test_nchat_build_arguments test_pr_only
+	test_check_api_failure test_build_arguments test_build_and_smoke_failures test_nchat_build_arguments test_pr_only test_auto_merge
 	test_superseded_items test_failure_report test_early_failure_report test_check_failure_report test_system_guard test_unrelated_changes)
 for test in "${tests[@]}"; do
 	bash "$test_script" --case "$test"

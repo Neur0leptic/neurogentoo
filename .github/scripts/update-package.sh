@@ -510,10 +510,28 @@ Workflow run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 	printf 'Opened pull request #%s\n' "$number"
 	close_superseded_pulls "$1" "$branch" "#$number"
 	close_failure_reports "$1" "" "$1 $2 is proposed in #$number."
-	if [[ "$(conf_field "$1" 3)" == auto ]]; then
-		api PUT "/repos/$GITHUB_REPOSITORY/pulls/$number/merge" '{"merge_method":"squash"}' >/dev/null
-		printf 'Merged pull request #%s\n' "$number"
-	fi
+	[[ "$(conf_field "$1" 3)" != auto ]] || merge_pull "$number" "$branch"
+}
+
+merge_pull() { # NUMBER BRANCH: squash-merge a checked update, then delete its branch
+	local attempt
+	# GitHub can refuse a merge while it still computes a new pull request's mergeability.
+	for attempt in 1 2 3; do
+		if api PUT "/repos/$GITHUB_REPOSITORY/pulls/$1/merge" '{"merge_method":"squash"}' >/dev/null; then
+			printf 'Merged pull request #%s\n' "$1"
+			delete_branch "$2"
+			return 0
+		fi
+		((attempt == 3)) || sleep 10
+	done
+	die "cannot merge pull request #$1; it stays open for a manual merge"
+}
+
+delete_branch() { # BRANCH: remove an update branch whose pull request was merged or closed
+	[[ "$1" =~ ^update/[A-Za-z0-9._+-]+$ ]] ||
+		{ printf 'update-package: not an update branch: %s\n' "$1" >&2; return 0; }
+	api DELETE "/repos/$GITHUB_REPOSITORY/git/refs/heads/$1" >/dev/null ||
+		printf 'update-package: cannot delete branch %s\n' "$1" >&2
 }
 
 cmd_report_failure() { # PACKAGE VERSION
@@ -546,18 +564,22 @@ report_issue() { # TITLE BODY -> number of the new issue, or of the open one wit
 
 # Cleanup must not fail an update that has already been published or reported.
 close_superseded_pulls() { # PACKAGE BRANCH REFERENCE: close the package's other open update pull requests
-	local numbers number
-	numbers="$(api GET "/repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100" |
+	local pulls number ref
+	pulls="$(api GET "/repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100" |
 		jq -r --arg prefix "update/${1//\//-}-" --arg branch "$2" '.[] |
 			select(.head.ref != $branch and (.head.ref | startswith($prefix)) and
-				(.head.ref | ltrimstr($prefix) | test("^[0-9]"))) | .number')" ||
+				(.head.ref | ltrimstr($prefix) | test("^[0-9]"))) | "\(.number) \(.head.ref)"')" ||
 		{ printf 'update-package: cannot list the pull requests of %s\n' "$1" >&2; return 0; }
-	for number in $numbers; do
-		api POST "/repos/$GITHUB_REPOSITORY/issues/$number/comments" \
+	while read -r number ref; do
+		[[ -n "$number" ]] || continue
+		if api POST "/repos/$GITHUB_REPOSITORY/issues/$number/comments" \
 			"$(jq -n --arg body "Superseded by $3." '$ARGS.named')" >/dev/null &&
-			api PATCH "/repos/$GITHUB_REPOSITORY/pulls/$number" '{"state":"closed"}' >/dev/null ||
+			api PATCH "/repos/$GITHUB_REPOSITORY/pulls/$number" '{"state":"closed"}' >/dev/null; then
+			delete_branch "$ref"
+		else
 			printf 'update-package: cannot close pull request #%s\n' "$number" >&2
-	done
+		fi
+	done <<<"$pulls"
 }
 
 close_failure_reports() { # PACKAGE KEPT_TITLE COMMENT: close the package's other open failure reports
