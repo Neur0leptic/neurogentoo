@@ -65,11 +65,42 @@ test_cargo_members() {
 	printf 'CARGO_UPDATE_DIRS="yazi-fm yazi-cli"\n' >"$fixture/recipe"
 	mkdir -p "$fixture/source/"{yazi-fm,yazi-cli}
 	touch "$fixture/source/"{yazi-fm,yazi-cli}/Cargo.toml
+	portageq() { printf '%s\n' "$fixture/distfiles"; }
 	pycargoebuild() { printf '%s\n' "$@" >"$fixture/cargo.args"; }
 	regenerate_cargo "$fixture/recipe" "$fixture/source"
 	assert grep -qxF "$fixture/source/yazi-fm" "$fixture/cargo.args"
 	assert grep -qxF "$fixture/source/yazi-cli" "$fixture/cargo.args"
 	assert grep -qxF -- -C "$fixture/cargo.args"
+	assert grep -qxF "$fixture/distfiles" "$fixture/cargo.args"
+}
+
+test_cargo_fetch_retry() {
+	printf 'EAPI=8\n' >"$fixture/recipe"
+	mkdir -p "$fixture/source" "$fixture/distfiles"
+	touch "$fixture/source/Cargo.toml"
+	printf 'kept' >"$fixture/distfiles/good-1.0.0.crate"
+	portageq() { printf '%s\n' "$fixture/distfiles"; }
+	sleep() { :; }
+	# The first run fails like wget after a broken TLS handshake: an empty crate stays.
+	pycargoebuild() {
+		printf 'x' >>"$fixture/calls"
+		if [[ "$(cat "$fixture/calls")" == x ]]; then
+			touch "$fixture/distfiles/zeroize-1.9.0.crate"
+			return 1
+		fi
+		[[ ! -e "$fixture/distfiles/zeroize-1.9.0.crate" ]] || return 1
+		printf 'crate' >"$fixture/distfiles/zeroize-1.9.0.crate"
+	}
+	regenerate_cargo "$fixture/recipe" "$fixture/source"
+	assert test "$(cat "$fixture/calls")" == xx
+	assert test -s "$fixture/distfiles/zeroize-1.9.0.crate"
+	assert test -s "$fixture/distfiles/good-1.0.0.crate"
+	rm -f -- "$fixture/calls"
+	expect_failure 'source "$UPDATER"; portageq() { printf "%s\n" "$FIXTURE/distfiles"; }; sleep() { :; }
+		pycargoebuild() { printf x >>"$FIXTURE/calls"; return 1; }
+		regenerate_cargo "$FIXTURE/recipe" "$FIXTURE/source"'
+	assert test "$(cat "$fixture/calls")" == xxx
+	assert grep -q 'pycargoebuild failed three times' "$fixture/failure.log"
 }
 
 test_nchat_version_location() {
@@ -398,7 +429,7 @@ if [[ "${1:-}" == --case ]]; then
 	exit
 fi
 
-tests=(test_set_var test_command_substitution_failure test_ego_sum test_cargo_members
+tests=(test_set_var test_command_substitution_failure test_ego_sum test_cargo_members test_cargo_fetch_retry
 	test_nchat_version_location test_libsignal_offline_patch test_submodule_commit test_gostat_mvs test_ci_keywords test_update_detection
 	test_check_api_failure test_build_arguments test_build_and_smoke_failures test_nchat_build_arguments test_pr_only
 	test_superseded_items test_failure_report test_early_failure_report test_check_failure_report test_system_guard test_unrelated_changes)

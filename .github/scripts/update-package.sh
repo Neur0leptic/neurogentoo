@@ -170,7 +170,7 @@ regenerate_ego_sum() { # EBUILD SOURCE_DIR: EGO_SUM from upstream's go.sum files
 }
 
 regenerate_cargo() { # EBUILD SOURCE_DIR: use package members, not a workspace root
-	local dirs dir
+	local dirs dir distdir attempt
 	local -a sources=()
 	dirs="$(sed -n 's/^CARGO_UPDATE_DIRS="\(.*\)"$/\1/p' "$1")"
 	for dir in ${dirs:-.}; do
@@ -179,7 +179,16 @@ regenerate_cargo() { # EBUILD SOURCE_DIR: use package members, not a workspace r
 		[[ -f "$2/$dir/Cargo.toml" ]] || die "missing Cargo member: $dir"
 		sources+=("$2/$dir")
 	done
-	pycargoebuild -C -F wget -M --no-config -i "$1" "${sources[@]}" >&2
+	distdir="$(portageq distdir)"
+	# wget gives up on a failed TLS handshake without retrying, and it has already created
+	# the empty crate file, which pycargoebuild would then skip as fetched. Remove such
+	# files and fetch again.
+	for attempt in 1 2 3; do
+		pycargoebuild -C -F wget -M --no-config -d "$distdir" -i "$1" "${sources[@]}" >&2 && return
+		find "$distdir" -maxdepth 1 -name '*.crate' -size 0 -delete
+		((attempt == 3)) || sleep 10
+	done
+	die "pycargoebuild failed three times"
 }
 
 regenerate_gostat() { # EBUILD SOURCE_DIR: combine pinned requirements with Go MVS
