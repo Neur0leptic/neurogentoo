@@ -19,7 +19,7 @@ QA_PREBUILT="opt/localsend/*"
 # GTK and Ayatana supply the Linux runner/plugin DT_NEEDED libraries. In
 # particular the bundled tray plugin links libayatana-appindicator3.so.1.
 RDEPEND="
-	>=sys-libs/glibc-2.34
+	elibc_glibc? ( >=sys-libs/glibc-2.34 )
 	sys-devel/gcc[cxx]
 	x11-libs/gtk+:3[wayland]
 	dev-libs/libayatana-appindicator
